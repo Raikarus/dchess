@@ -6,9 +6,11 @@ from ..move import Move
 
 
 class Piece(ABC):
-    position: Position
-    color: Color
-    has_moved: bool = False
+    def __init__(self, position: "Position", color: Color, symbol: str = "Unknown", has_moved: bool = False):
+        self.position = position
+        self.color = color
+        self.symbol = symbol
+        self.has_moved = has_moved
 
     @abstractmethod
     def possible_moves(self, board: "Board") -> List["Move"]:
@@ -43,19 +45,17 @@ class PieceFactory:
     @classmethod
     def register_piece(cls, piece_type: str, piece_class: Type["Piece"]) -> None:
         """
-        Зарегестрировать класс фигуры под указанным типом
+        Зарегистрировать класс фигуры под указанным типом
         """
         cls._registry[piece_type] = piece_class
 
     @classmethod
-    def create_piece(cls, piece_type: str, position: "Position", color: Color, **kwargs) -> Optional["Piece"]:
-        """
-        Создать экземляр фигуры по типу (С МАЛЕНЬКОЙ БУКВЫ)
-        """
+    def create_piece(cls, piece_type: str, position: "Position", color: Color, symbol: str, **kwargs) -> Optional["Piece"]:
         piece_class = cls._registry.get(piece_type)
         if not piece_class:
             raise ValueError(f"Unknown piece type: {piece_type}")
-        return piece_class(position = position, color = color, **kwargs)
+        # Создаём новый экземпляр с нужными параметрами
+        return piece_class(position=position, color=color, symbol=symbol, **kwargs)
 
 
 def register_piece(piece_type: str):

@@ -3,6 +3,7 @@ from .move import Move
 from .position import Position
 from .color import Color
 
+
 class Board:
 
     def __init__(self, width: int, height: int, depth: int):

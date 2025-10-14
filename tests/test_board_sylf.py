@@ -1,5 +1,5 @@
 import pytest
-from app.domain.pieces import Sylf, Gryphon
+from app.domain.pieces import Sylf, Gryphon, PieceFactory
 from app.domain import Board, Position, Color
 
 
@@ -15,25 +15,19 @@ def board():
     return b
 
 
-def make_piece(piece_cls, position, color):
-    p = piece_cls()
-    p.position = position
-    p.color = color
-    return p
-
-
 @pytest.fixture
 def piece(request):
     piece_cls = getattr(request, 'param')[0]
     position = getattr(request, 'param')[1]
     color = getattr(request, 'param')[2]
-    return make_piece(piece_cls, position, color)
+    symbol = "o"
+    return PieceFactory.create_piece(piece_cls, position, color, symbol)
 
 @pytest.mark.parametrize("piece", [
-    (Sylf, Position(11, 7, 2), Color.WHITE),
-    (Sylf, Position(0, 0, 2), Color.BLACK),
-    (Gryphon, Position(0, 0, 2), Color.WHITE),
-    (Gryphon, Position(0, 0, 1), Color.WHITE)
+    ("sylf", Position(11, 7, 2), Color.WHITE),
+    ("sylf", Position(0, 0, 2), Color.BLACK),
+    ("gryphon", Position(0, 0, 2), Color.WHITE),
+    ("gryphon", Position(0, 0, 1), Color.WHITE)
 ], indirect=True)
 def test_no_moves_outside_board(board, piece):
     board.place_piece(piece)
@@ -45,29 +39,29 @@ def test_no_moves_outside_board(board, piece):
 
 
 @pytest.mark.parametrize("piece, enemy_pos", [
-    ((Sylf, Position(1, 1, 2), Color.WHITE), Position(1, 2, 2)),
-    ((Sylf, Position(1, 1, 2), Color.WHITE), Position(1, 1, 1)),
-    ((Sylf, Position(1, 1, 2), Color.BLACK), Position(1, 0, 2)),
-    ((Sylf, Position(1, 1, 2), Color.BLACK), Position(1, 1, 1)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(6, 7, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(7, 6, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(7, 2, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(6, 1, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(2, 1, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(1, 2, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(1, 6, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(2, 7, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(3, 3, 1)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(5, 5, 1)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(3, 5, 1)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(5, 3, 1)),
-    ((Gryphon, Position(4, 4, 1), Color.WHITE), Position(3, 3, 2)),
-    ((Gryphon, Position(4, 4, 1), Color.WHITE), Position(5, 5, 2)),
-    ((Gryphon, Position(4, 4, 1), Color.WHITE), Position(3, 5, 2)),
-    ((Gryphon, Position(4, 4, 1), Color.WHITE), Position(5, 3, 2))
+    (("sylf", Position(1, 1, 2), Color.WHITE), Position(1, 2, 2)),
+    (("sylf", Position(1, 1, 2), Color.WHITE), Position(1, 1, 1)),
+    (("sylf", Position(1, 1, 2), Color.BLACK), Position(1, 0, 2)),
+    (("sylf", Position(1, 1, 2), Color.BLACK), Position(1, 1, 1)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(6, 7, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(7, 6, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(7, 2, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(6, 1, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(2, 1, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(1, 2, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(1, 6, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(2, 7, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(3, 3, 1)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(5, 5, 1)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(3, 5, 1)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(5, 3, 1)),
+    (("gryphon", Position(4, 4, 1), Color.WHITE), Position(3, 3, 2)),
+    (("gryphon", Position(4, 4, 1), Color.WHITE), Position(5, 5, 2)),
+    (("gryphon", Position(4, 4, 1), Color.WHITE), Position(3, 5, 2)),
+    (("gryphon", Position(4, 4, 1), Color.WHITE), Position(5, 3, 2))
 ], indirect=["piece"])
 def test_can_capture_opponent(board, piece, enemy_pos):
-    enemy = make_piece(type(piece), enemy_pos, Color.BLACK if piece.color == Color.WHITE else Color.WHITE)
+    enemy = PieceFactory.create_piece("sylf", enemy_pos, Color.BLACK if piece.color == Color.WHITE else Color.WHITE, "o")
     board.place_piece(piece)
     board.place_piece(enemy)
     moves = piece.possible_moves(board)
@@ -76,29 +70,29 @@ def test_can_capture_opponent(board, piece, enemy_pos):
 
 
 @pytest.mark.parametrize("piece, friendly_pos", [
-    ((Sylf, Position(1, 1, 2), Color.WHITE), Position(1, 2, 2)),
-    ((Sylf, Position(1, 1, 2), Color.WHITE), Position(1, 1, 1)),
-    ((Sylf, Position(1, 1, 2), Color.BLACK), Position(1, 0, 2)),
-    ((Sylf, Position(1, 1, 2), Color.BLACK), Position(1, 1, 1)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(6, 7, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(7, 6, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(7, 2, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(6, 3, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(2, 1, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(1, 2, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(1, 6, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(2, 7, 2)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(3, 3, 1)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(5, 5, 1)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(3, 5, 1)),
-    ((Gryphon, Position(4, 4, 2), Color.WHITE), Position(5, 3, 1)),
-    ((Gryphon, Position(4, 4, 1), Color.WHITE), Position(3, 3, 2)),
-    ((Gryphon, Position(4, 4, 1), Color.WHITE), Position(5, 5, 2)),
-    ((Gryphon, Position(4, 4, 1), Color.WHITE), Position(3, 5, 2)),
-    ((Gryphon, Position(4, 4, 1), Color.WHITE), Position(5, 3, 2))
+    (("sylf", Position(1, 1, 2), Color.WHITE), Position(1, 2, 2)),
+    (("sylf", Position(1, 1, 2), Color.WHITE), Position(1, 1, 1)),
+    (("sylf", Position(1, 1, 2), Color.BLACK), Position(1, 0, 2)),
+    (("sylf", Position(1, 1, 2), Color.BLACK), Position(1, 1, 1)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(6, 7, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(7, 6, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(7, 2, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(6, 3, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(2, 1, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(1, 2, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(1, 6, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(2, 7, 2)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(3, 3, 1)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(5, 5, 1)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(3, 5, 1)),
+    (("gryphon", Position(4, 4, 2), Color.WHITE), Position(5, 3, 1)),
+    (("gryphon", Position(4, 4, 1), Color.WHITE), Position(3, 3, 2)),
+    (("gryphon", Position(4, 4, 1), Color.WHITE), Position(5, 5, 2)),
+    (("gryphon", Position(4, 4, 1), Color.WHITE), Position(3, 5, 2)),
+    (("gryphon", Position(4, 4, 1), Color.WHITE), Position(5, 3, 2))
 ], indirect=["piece"])
 def test_cannot_capture_own_piece(board, piece, friendly_pos):
-    friend = make_piece(type(piece), friendly_pos, piece.color)
+    friend = PieceFactory.create_piece("sylf", friendly_pos, piece.color, "o")
     board.place_piece(piece)
     board.place_piece(friend)
     moves = piece.possible_moves(board)
@@ -108,8 +102,8 @@ def test_cannot_capture_own_piece(board, piece, friendly_pos):
 
 # Тест: фигура может делать специфические ходы (передаём старт и ожидаемые позиции)
 @pytest.mark.parametrize("piece, expected_positions", [
-    ((Sylf, Position(1, 1, 1), Color.WHITE), [Position(0, 1, 2), Position(2, 1, 2), Position(1, 1, 2)]),
-    ((Sylf, Position(1, 1, 1), Color.BLACK), [Position(0, 6, 2), Position(2, 6, 2), Position(1, 1, 2)])
+    (("sylf", Position(1, 1, 1), Color.WHITE), [Position(0, 1, 2), Position(2, 1, 2), Position(1, 1, 2)]),
+    (("sylf", Position(1, 1, 1), Color.BLACK), [Position(0, 6, 2), Position(2, 6, 2), Position(1, 1, 2)])
 ], indirect=["piece"])
 def test_specific_moves(board, piece, expected_positions):
     board.place_piece(piece)
@@ -122,8 +116,8 @@ def test_specific_moves(board, piece, expected_positions):
 
 # Тест на возможность повышения фигуры
 @pytest.mark.parametrize("piece, can_promote", [
-    ((Sylf, Position(0, 0, 2), Color.BLACK), False),
+    (("sylf", Position(0, 0, 2), Color.BLACK), False),
 ])
 def test_promotion_ability(piece, can_promote):
-    p = make_piece(piece[0], piece[1], piece[2])
+    p = PieceFactory.create_piece(piece[0], piece[1], piece[2], '0')
     assert p.can_promote() == can_promote, f"Проверка способности превращения для {type(p).__name__}"

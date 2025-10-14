@@ -2,7 +2,9 @@ from typing import List
 from enum import Enum
 from .color import Color
 from .move import Move
-
+from .board import Board
+from .position import Position
+from .pieces import PieceFactory
 
 class GameState(Enum):
     ONGOING = 1
@@ -12,12 +14,12 @@ class GameState(Enum):
     DRAW = 5
 
 
-class Game:
+class GameManager:
     def __init__(self, players: List[str]):
         self.players = players
         self.current_turn: Color = Color.WHITE
         self.state: GameState = GameState.ONGOING
-        self.board = self._initialize_board()
+        self.board: "Board" = self._initialize_board()
         self.move_history: List[Move] = []
 
     def _initialize_board(self) -> "Board":
@@ -26,7 +28,23 @@ class Game:
 
         :return: объект доски с раставленными фигурами
         """
-        pass
+        board = Board(12, 8, 3)
+        symbols = {
+            "sylf": "😇",
+            "gryphon": "🦅"
+        }
+        start_positions = {
+            ("sylf", Color.WHITE): [Position(x, 1, 2) for x in range(0, 11, 2)],
+            ("sylf", Color.BLACK): [Position(x, 6, 2) for x in range(0, 11, 2)],
+            ("gryphon", Color.WHITE): [Position(2, 0, 2), Position(10, 0, 2)],
+            ("gryphon", Color.BLACK): [Position(2, 7, 2), Position(10, 7, 2)]
+        }
+        for (piece_name, color), positions in start_positions.items():
+            board.register_start_positions(piece_name, color, positions)
+            for pos in positions:
+                piece = PieceFactory.create_piece(piece_name, pos, color, symbols[piece_name])
+                board.place_piece(piece)
+        return board
 
     def make_move(self, move: Move) -> bool:
         """
