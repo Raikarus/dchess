@@ -6,11 +6,11 @@ from ..move import Move
 
 
 class Piece(ABC):
-    def __init__(self, position: "Position", color: Color, symbol: str = "Unknown", has_moved: bool = False):
+    def __init__(self, position: "Position", color: Color, has_moved: bool = False, piece_value: int = 0):
         self.position = position
         self.color = color
-        self.symbol = symbol
         self.has_moved = has_moved
+        self.piece_value = piece_value
 
     @abstractmethod
     def possible_moves(self, board: "Board") -> List["Move"]:
@@ -36,6 +36,7 @@ class Piece(ABC):
         """
         if not self.can_promote():
             return None
+        # TODO: Добавить класс symbols/images в котором будут определены изображения для всех Pieces
         return PieceFactory.create_piece(new_piece_type, self.position, self.color)
 
 
@@ -50,12 +51,13 @@ class PieceFactory:
         cls._registry[piece_type] = piece_class
 
     @classmethod
-    def create_piece(cls, piece_type: str, position: "Position", color: Color, symbol: str, **kwargs) -> Optional["Piece"]:
+    def create_piece(cls, piece_type: str, position: "Position",
+                     color: Color, **kwargs) -> Optional["Piece"]:
         piece_class = cls._registry.get(piece_type)
         if not piece_class:
             raise ValueError(f"Unknown piece type: {piece_type}")
         # Создаём новый экземпляр с нужными параметрами
-        return piece_class(position=position, color=color, symbol=symbol, **kwargs)
+        return piece_class(position=position, color=color, **kwargs)
 
 
 def register_piece(piece_type: str):
