@@ -7,6 +7,7 @@ from ..color import Color
 
 @register_piece("gryphon")
 class Gryphon(Piece):
+
     def possible_moves(self, board: "Board") -> List["Move"]:
         moves = []
         curr_pos = self.position
