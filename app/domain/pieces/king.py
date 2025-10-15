@@ -14,7 +14,7 @@ class King(Piece):
 
         if z == 1:
             move_positions = [
-                Position(x + i, y + j, 2) for i, j in [(0, 1), (1, 1), (1, 0), (1, -1),
+                Position(x + i, y + j, 1) for i, j in [(0, 1), (1, 1), (1, 0), (1, -1),
                                                        (0, -1), (-1, -1), (-1, 0), (-1, 1)]
             ]
             for pos in move_positions:
