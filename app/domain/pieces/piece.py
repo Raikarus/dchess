@@ -36,7 +36,6 @@ class Piece(ABC):
         """
         if not self.can_promote():
             return None
-        # TODO: Добавить класс symbols/images в котором будут определены изображения для всех Pieces
         return PieceFactory.create_piece(new_piece_type, self.position, self.color)
 
 
