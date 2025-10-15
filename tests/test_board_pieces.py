@@ -20,8 +20,7 @@ def piece(request):
     piece_cls = getattr(request, 'param')[0]
     position = getattr(request, 'param')[1]
     color = getattr(request, 'param')[2]
-    symbol = "o"
-    return PieceFactory.create_piece(piece_cls, position, color, symbol)
+    return PieceFactory.create_piece(piece_cls, position, color)
 
 @pytest.mark.parametrize("piece", [
     ("sylf", Position(11, 7, 2), Color.WHITE),
@@ -61,7 +60,7 @@ def test_no_moves_outside_board(board, piece):
     (("gryphon", Position(4, 4, 1), Color.WHITE), Position(5, 3, 2))
 ], indirect=["piece"])
 def test_can_capture_opponent(board, piece, enemy_pos):
-    enemy = PieceFactory.create_piece("sylf", enemy_pos, Color.BLACK if piece.color == Color.WHITE else Color.WHITE, "o")
+    enemy = PieceFactory.create_piece("sylf", enemy_pos, Color.BLACK if piece.color == Color.WHITE else Color.WHITE)
     board.place_piece(piece)
     board.place_piece(enemy)
     moves = piece.possible_moves(board)
@@ -92,7 +91,7 @@ def test_can_capture_opponent(board, piece, enemy_pos):
     (("gryphon", Position(4, 4, 1), Color.WHITE), Position(5, 3, 2))
 ], indirect=["piece"])
 def test_cannot_capture_own_piece(board, piece, friendly_pos):
-    friend = PieceFactory.create_piece("sylf", friendly_pos, piece.color, "o")
+    friend = PieceFactory.create_piece("sylf", friendly_pos, piece.color)
     board.place_piece(piece)
     board.place_piece(friend)
     moves = piece.possible_moves(board)
@@ -119,5 +118,5 @@ def test_specific_moves(board, piece, expected_positions):
     (("sylf", Position(0, 0, 2), Color.BLACK), False),
 ])
 def test_promotion_ability(piece, can_promote):
-    p = PieceFactory.create_piece(piece[0], piece[1], piece[2], '0')
+    p = PieceFactory.create_piece(piece[0], piece[1], piece[2])
     assert p.can_promote() == can_promote, f"Проверка способности превращения для {type(p).__name__}"
