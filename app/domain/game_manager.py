@@ -42,10 +42,15 @@ class GameManager:
             ("king", Color.WHITE): [Position(6, 0, 1)],
             ("king", Color.BLACK): [Position(6, 7, 1)]
         }
+        piece_values = {
+            "sylf": 0.2,
+            "gryphon": 0.3,
+            "king": 100
+        }
         for (piece_name, color), positions in start_positions.items():
             board.register_start_positions(piece_name, color, positions)
             for pos in positions:
-                piece = PieceFactory.create_piece(piece_name, pos, color)
+                piece = PieceFactory.create_piece(piece_name, pos, color, piece_value=piece_values[piece_name])
                 board.place_piece(piece)
         return board
 
