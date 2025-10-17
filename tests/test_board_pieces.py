@@ -1,5 +1,5 @@
 import pytest
-from app.domain.pieces import Sylf, Gryphon, PieceFactory
+from app.domain.piece_behaviours import Sylf, Gryphon, PieceFactory
 from app.domain import Board, Position, Color
 
 

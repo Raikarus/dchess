@@ -1,21 +1,20 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status, Depends
 from app.domain.position import Position
 from app.domain.move import Move
-from app.domain.game_manager import GameManager, GameState
+from app.domain.aggregates.game_manager import GameManager
 from ..schemas import (
     MoveResponse,
     MoveRequest
 )
+from dependency_injector.wiring import Provide, inject
+from app.core import Container
 
-router = APIRouter()
-
-
-# Создаем сессию игры
-game_manager = GameManager(players=["White Player", "Black Player"])
+router = APIRouter(prefix="/api/game", tags=["game"])
 
 
-@router.post("/make_move", response_model=MoveResponse)
-async def make_move(move: MoveRequest):
+@router.post("/make_move", response_model=MoveResponse, status_code=status.HTTP_200_OK)
+@inject
+async def make_move(move: MoveRequest, game_manager: GameManager = Depends(Provide[Container.game_manager])):
     from_pos = Position(move.from_x, move.from_y, move.from_z)
     to_pos = Position(move.to_x, move.to_y, move.to_z)
     move_obj = Move(from_position=from_pos, to_position=to_pos)
@@ -26,8 +25,9 @@ async def make_move(move: MoveRequest):
     return MoveResponse(success=True, message="Move made successfully")
 
 
-@router.get("/state")
-async def get_state():
+@router.get("/state", status_code=status.HTTP_200_OK)
+@inject
+async def get_state(game_manager: GameManager = Depends(Provide[Container.game_manager])):
     return {
         "current_turn": game_manager.current_turn.name,
         "game_state": game_manager.state.name,
