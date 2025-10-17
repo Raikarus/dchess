@@ -1,11 +1,9 @@
 from typing import List
 from enum import Enum
-import torch
-from .color import Color
-from .move import Move
-from .board import Board
-from .position import Position
-from .pieces import PieceFactory, King
+from app.domain.color import Color
+from app.domain.move import Move
+from app.domain.board import Board
+from app.domain.position import Position
 
 
 class GameState(Enum):
@@ -26,57 +24,53 @@ class GameManager:
         self.current_player = players[0]
         self.current_turn = Color.WHITE
 
-    @staticmethod
-    def _initialize_board() -> "Board":
-        """
-        Создание и настройка начальной доски
-
-        :return: объект доски с расставленными фигурами
-        """
-        board = Board(12, 8, 3)
-        start_positions = {
-            ("sylf", Color.WHITE): [Position(x, 1, 2) for x in range(0, 11, 2)],
-            ("sylf", Color.BLACK): [Position(x, 6, 2) for x in range(0, 11, 2)],
-            ("gryphon", Color.WHITE): [Position(2, 0, 2), Position(10, 0, 2)],
-            ("gryphon", Color.BLACK): [Position(2, 7, 2), Position(10, 7, 2)],
-            ("king", Color.WHITE): [Position(6, 0, 1)],
-            ("king", Color.BLACK): [Position(6, 7, 1)]
-        }
-        piece_values = {
-            "sylf": 0.2,
-            "gryphon": 0.3,
-            "king": 100
-        }
-        for (piece_name, color), positions in start_positions.items():
-            board.register_start_positions(piece_name, color, positions)
-            for pos in positions:
-                piece = PieceFactory.create_piece(piece_name, pos, color, piece_value=piece_values[piece_name])
-                board.place_piece(piece)
-        return board
+    # @staticmethod
+    # def _initialize_board() -> "Board":
+    #     """
+    #     Создание и настройка начальной доски
+    #
+    #     :return: объект доски с расставленными фигурами
+    #     """
+    #     board = Board(12, 8, 3)
+    #     start_positions = {
+    #         ("sylf", Color.WHITE): [Position(x, 1, 2) for x in range(0, 11, 2)],
+    #         ("sylf", Color.BLACK): [Position(x, 6, 2) for x in range(0, 11, 2)],
+    #         ("gryphon", Color.WHITE): [Position(2, 0, 2), Position(10, 0, 2)],
+    #         ("gryphon", Color.BLACK): [Position(2, 7, 2), Position(10, 7, 2)],
+    #         ("king", Color.WHITE): [Position(6, 0, 1)],
+    #         ("king", Color.BLACK): [Position(6, 7, 1)]
+    #     }
+    #     for (piece_name, color), positions in start_positions.items():
+    #         board.register_start_positions(piece_name, color, positions)
+    #         for pos in positions:
+    #             piece = PieceFactory.create_piece(piece_name, pos, color)
+    #             board.place_piece(piece)
+    #     return board
 
     def make_move(self, move: Move) -> bool:
+
         piece = self.board.get_piece_at(move.from_position)
         if not piece or piece.color != self.current_turn:
             return False  # no piece or wrong color
-
-        valid_moves = self.get_valid_moves(move.from_position)
-        if move not in valid_moves:
-            return False  # ход недопустим
-
-        self.board.move_piece(move)
-        self.move_history.append(move)
-
-        # Проверяем, не приводит ли этот ход к собственному шаху
-        if self.is_check(self.current_turn):
-            # Отменяем ход
-            self.undo_move()
-            return False
-
-        # Переключаем ход и обновляем состояние
-        self.switch_turn()
-        self.state = self.get_game_state()
-        self.current_player = self.players[0] if self.current_turn == Color.WHITE else self.players[1]
-        return True
+        #
+        # valid_moves = self.get_valid_moves(move.from_position)
+        # if move not in valid_moves:
+        #     return False  # ход недопустим
+        #
+        # self.board.move_piece(move)
+        # self.move_history.append(move)
+        #
+        # # Проверяем, не приводит ли этот ход к собственному шаху
+        # if self.is_check(self.current_turn):
+        #     # Отменяем ход
+        #     self.undo_move()
+        #     return False
+        #
+        # # Переключаем ход и обновляем состояние
+        # self.switch_turn()
+        # self.state = self.get_game_state()
+        # self.current_player = self.players[0] if self.current_turn == Color.WHITE else self.players[1]
+        # return True
 
     def undo_move(self) -> None:
         if not self.move_history:
@@ -221,19 +215,19 @@ class GameManager:
                 self.board.move_piece(move_back)
         return legal_moves
 
-    def get_piece_states(self) -> torch.Tensor:
-        # Создаем пустой тензор с нулями: 2 цвета, 8x8x8 доска
-        states = torch.zeros((2, self.board.width, self.board.height, self.board.depth), dtype=torch.float32)
-        for pos, piece in self.board._pieces.items():
-            color_idx = 0 if piece.color == Color.WHITE else 1  # Пример индексации цвета
-            states[color_idx, pos.x, pos.y, pos.z] = 1.0
-        return states
-
-    def get_piece_values(self) -> torch.Tensor:
-        values = torch.zeros((self.board.width, self.board.height, self.board.depth), dtype=torch.float32)
-        for pos, piece in self.board._pieces.items():
-            values[pos.x, pos.y, pos.z] = piece.piece_value
-        return values
+    # def get_piece_states(self) -> torch.Tensor:
+    #     # Создаем пустой тензор с нулями: 2 цвета, 8x8x8 доска
+    #     states = torch.zeros((2, self.board.width, self.board.height, self.board.depth), dtype=torch.float32)
+    #     for pos, piece in self.board._pieces.items():
+    #         color_idx = 0 if piece.color == Color.WHITE else 1  # Пример индексации цвета
+    #         states[color_idx, pos.x, pos.y, pos.z] = 1.0
+    #     return states
+    #
+    # def get_piece_values(self) -> torch.Tensor:
+    #     values = torch.zeros((self.board.width, self.board.height, self.board.depth), dtype=torch.float32)
+    #     for pos, piece in self.board._pieces.items():
+    #         values[pos.x, pos.y, pos.z] = piece.piece_value
+    #     return values
 
     def get_reward(self) -> float:
         """
@@ -282,15 +276,15 @@ class GameManager:
         # Простая заглушка — можно добавить правила 50 ходов, повторения и т.п.
         return False
 
-    def find_king(self, color: Color) -> Position:
-        # Найти позицию короля указанного цвета
-        for pos, piece in self.board._pieces.items():
-            if piece.color == color and isinstance(piece, King):
-                return pos
-        print(str(self))
-        self.print_move_history()
-        raise ValueError("Король не найден")
-
-    def opponent_color(self, color: Color) -> Color:
-        # Вернуть цвет противника
-        return Color.BLACK if color == Color.WHITE else Color.WHITE
+    # def find_king(self, color: Color) -> Position:
+    #     # Найти позицию короля указанного цвета
+    #     for pos, piece in self.board._pieces.items():
+    #         if piece.color == color and isinstance(piece, King):
+    #             return pos
+    #     print(str(self))
+    #     self.print_move_history()
+    #     raise ValueError("Король не найден")
+    #
+    # def opponent_color(self, color: Color) -> Color:
+    #     # Вернуть цвет противника
+    #     return Color.BLACK if color == Color.WHITE else Color.WHITE

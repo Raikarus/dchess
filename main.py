@@ -1,6 +1,13 @@
 import fastapi
 import uvicorn
+from app.core.container import Container
 from app.presentation.api.routers import gameRouter
+
+container = Container()
+container.init_resources()
+
 app = fastapi.FastAPI()
-app.include_router(gameRouter, prefix="/api/game", tags=["game"])
+
+app.include_router(gameRouter)
+
 uvicorn.run(app)
