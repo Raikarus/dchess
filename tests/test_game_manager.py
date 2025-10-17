@@ -1,9 +1,9 @@
 import pytest
-from app.domain.game_manager import GameManager, GameState
+from app.domain.aggregates.game_manager import GameManager, GameState
 from app.domain.color import Color
 from app.domain.position import Position
 from app.domain.move import Move
-from app.domain.pieces import King
+
 
 @pytest.fixture
 def game_manager():

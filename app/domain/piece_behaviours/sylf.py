@@ -1,14 +1,17 @@
 from typing import List
-from .piece import Piece, register_piece
+from app.domain.value_objects.piece import PieceType
 from ..position import Position
 from ..move import Move
 from ..color import Color
+from app.domain.utils import register_behavior
+from .base import Base
+from app.domain.board import Board
 
 
-@register_piece("sylf")
-class Sylf(Piece):
+@register_behavior(PieceType.SYLF)
+class Sylf(Base):
 
-    def possible_moves(self, board: "Board") -> List["Move"]:
+    def __call__(self, board: Board) -> List["Move"]:
         moves = []
         curr_pos = self.position
         x, y, z = curr_pos.x, curr_pos.y, curr_pos.z

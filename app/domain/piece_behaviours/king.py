@@ -1,5 +1,5 @@
 from typing import List
-from .piece import Piece, register_piece
+from app.domain.value_objects.piece import Piece, register_piece
 from ..position import Position
 from ..move import Move
 

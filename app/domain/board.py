@@ -1,17 +1,17 @@
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, Dict
 from .move import Move
 from .position import Position
 from .color import Color
+from app.domain.value_objects.board_geometry import BoardGeometry
+from dataclasses import dataclass, field
 
 
+@dataclass
 class Board:
-
-    def __init__(self, width: int, height: int, depth: int):
-        self._start_positions: dict[Tuple[str, Color], List[Position]] = {}
-        self._pieces: dict[Position, "Piece"] = {}
-        self.width = width
-        self.height = height
-        self.depth = depth
+    id: int
+    geometry: BoardGeometry = BoardGeometry(width=8, height=12, depth=3)
+    start_positions: Dict[Tuple[str, Color], List[Position]] = field(default_factory=Dict)
+    pieces: Dict[Position, "Piece"] = field(default_factory=Dict)
 
     def is_within_bounds(self, position: Position) -> bool:
         return (0 <= position.x < self.width and
