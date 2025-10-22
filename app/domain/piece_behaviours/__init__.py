@@ -1,4 +1,4 @@
-from .sylf import Sylf
+from .sylph import Sylf
 from .gryphon import Gryphon
 from .king import King
 from .base import Base

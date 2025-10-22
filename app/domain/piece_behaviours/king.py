@@ -1,13 +1,16 @@
 from typing import List
-from app.domain.value_objects.piece import Piece, register_piece
+from app.domain.value_objects.piece import PieceType
+from app.domain.utils import register_behavior
+from .base import Base
 from ..position import Position
 from ..move import Move
+from app.domain import Board
 
 
-@register_piece("king")
-class King(Piece):
+@register_behavior(PieceType.KING)
+class King(Base):
 
-    def possible_moves(self, board: "Board") -> List["Move"]:
+    def __call__(self, board: "Board") -> List["Move"]:
         moves = []
         curr_pos = self.position
         x, y, z = curr_pos.x, curr_pos.y, curr_pos.z
@@ -27,6 +30,3 @@ class King(Piece):
 
         moves = [move for move in moves if board.is_within_bounds(move.to_position)]
         return moves
-
-    def can_promote(self) -> bool:
-        return False

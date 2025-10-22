@@ -8,8 +8,8 @@ from .base import Base
 from app.domain.board import Board
 
 
-@register_behavior(PieceType.SYLF)
-class Sylf(Base):
+@register_behavior(PieceType.SYLPH)
+class Sylph(Base):
 
     def __call__(self, board: Board) -> List["Move"]:
         moves = []
@@ -39,11 +39,8 @@ class Sylf(Base):
             if board.is_empty(above_pos):
                 moves.append(Move(curr_pos, above_pos))
 
-            for pos in board.get_start_positions_for_piece('sylf', self.color):
+            for pos in board.get_start_positions_for_piece('sylph', self.color):
                 if board.is_empty(pos):
                     moves.append(Move(curr_pos, pos))
         moves = [move for move in moves if board.is_within_bounds(move.to_position)]
         return moves
-
-    def can_promote(self) -> bool:
-        return False

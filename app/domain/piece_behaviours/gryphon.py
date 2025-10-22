@@ -39,6 +39,3 @@ class Gryphon(Base):
                         moves.append(Move(curr_pos, pos, is_capture=True))
         moves = [move for move in moves if board.is_within_bounds(move.to_position)]
         return moves
-
-    def can_promote(self) -> bool:
-        return False

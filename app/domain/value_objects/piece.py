@@ -9,5 +9,5 @@ class Piece:
 
 class PieceType(Enum):
     KING = 0
-    SYLF = 1
+    SYLPH = 1
     GRYPHON = 2
