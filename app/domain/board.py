@@ -1,9 +1,6 @@
 from typing import Optional, List, Tuple, Dict
-from .move import Move
-from .position import Position
 from .color import Color
-from .value_objects.piece import PieceType
-from .value_objects.board_geometry import BoardGeometry
+from .value_objects import PieceType, BoardGeometry, Position, Move
 from dataclasses import dataclass, field
 
 @dataclass
@@ -18,7 +15,7 @@ class Board:
             for y in range(self.geometry.height):
                 for x in range(self.geometry.width):
                     piece = self.get_piece_at(Position(x, y, z))
-                    if (piece):
+                    if piece:
                         board_str += "○"
                     else:
                         board_str += "•"
@@ -40,7 +37,4 @@ class Board:
     def place_piece(self, piece_type: "PieceType", color: Color, position: Position) -> None:
         self.pieces[position] = (piece_type, color)
 
-    def move_piece(self, move: Move) -> None:
-        piece = self.pieces.pop(move.from_position)
-        piece.position = move.to_position
-        self.pieces[move.to_position] = piece
+

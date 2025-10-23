@@ -1,11 +1,8 @@
 from typing import List
 from enum import Enum
 from app.domain.color import Color
-from app.domain.move import Move
 from app.domain.board import Board
-from app.domain.value_objects import BoardGeometry
-from app.domain.position import Position
-from app.domain.value_objects import PieceType
+from app.domain.value_objects import BoardGeometry, PieceType, Position, Move
 
 
 class GameState(Enum):
@@ -34,6 +31,7 @@ class Game:
             (PieceType.SYLPH, Color.WHITE): [Position(x, 1, 2) for x in range(0, board_geometry.width, 2)],
             (PieceType.SYLPH, Color.BLACK): [Position(x, board_geometry.height - 2, 2) for x in
                                              range(0, board_geometry.width, 2)]
+
         }
 
         board = Board(board_geometry, starting_positions)
@@ -43,3 +41,7 @@ class Game:
                 board.place_piece(piece_type, color, position)
 
         return board
+
+    def move_piece(self, move: Move) -> bool:
+        # self.board.move
+        pass

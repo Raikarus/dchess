@@ -1,7 +1,5 @@
-import pytest
 from app.domain.color import Color
-from app.domain.position import Position
-from app.domain.value_objects import PieceType
+from app.domain.value_objects import Position, PieceType
 from app.domain.board import Board
 from app.domain.aggregates import Game, GameState
 

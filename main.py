@@ -7,8 +7,11 @@ from app.domain.aggregates import Game
 container = Container()
 container.init_resources()
 
-app = fastapi.FastAPI()
+game = Game(["p1", "p2"])
+print(game.board)
 
-app.include_router(gameRouter)
-
-uvicorn.run(app)
+# app = fastapi.FastAPI()
+#
+# app.include_router(gameRouter)
+#
+# uvicorn.run(app)

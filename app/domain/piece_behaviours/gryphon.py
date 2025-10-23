@@ -1,9 +1,7 @@
 from typing import List
-from app.domain.value_objects.piece import PieceType
 from app.domain.utils import register_behavior
 from .base import Base
-from ..position import Position
-from ..move import Move
+from app.domain.value_objects import Move, Position, PieceType
 from app.domain import Board
 
 

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
-from .position import Position
+from app.domain.value_objects.position import Position
 
 
 @dataclass

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Depends
-from app.domain.position import Position
-from app.domain.move import Move
+from app.domain.value_objects.position import Position
+from app.domain.value_objects.move import Move
 from app.domain.aggregates.game import Game
 from ..schemas import (
     MoveResponse,
