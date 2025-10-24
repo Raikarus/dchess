@@ -9,7 +9,8 @@ from app.domain.board import Board
 @register_behavior(PieceType.SYLPH)
 class Sylph(Base):
 
-    def __call__(self, board: Board) -> List["Move"]:
+    def __call__(self, board: Board) -> List["MovePattern"]:
+        return 1
         moves = []
         curr_pos = self.position
         x, y, z = curr_pos.x, curr_pos.y, curr_pos.z
@@ -42,3 +43,4 @@ class Sylph(Base):
                     moves.append(Move(curr_pos, pos))
         moves = [move for move in moves if board.is_within_bounds(move.to_position)]
         return moves
+

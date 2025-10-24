@@ -1,23 +1,19 @@
 from typing import List
-from app.domain.utils import register_behavior
 from .base import Base
+from app.domain.utils import register_behavior
 from app.domain.value_objects import Position, Move, PieceType
-from app.domain import Board
+from app.domain import Board, MovePattern, Vector
 
 
 @register_behavior(PieceType.KING)
 class King(Base):
-
-    def __call__(self, board: "Board") -> List["Move"]:
-        moves = []
-        curr_pos = self.position
-        x, y, z = curr_pos.x, curr_pos.y, curr_pos.z
+    def __call__(self, z: int) -> List["MovePattern"]:
+        move_patterns = []
 
         if z == 1:
-            move_positions = [
-                Position(x + i, y + j, 1) for i, j in [(0, 1), (1, 1), (1, 0), (1, -1),
-                                                       (0, -1), (-1, -1), (-1, 0), (-1, 1)]
-            ]
+            vectors = [Vector(Position(i, j, 1), 1) for i in range(-1, 2) for j in range(-1, 2) if i != j != 0]
+            print(vectors)
+            return 1
             for pos in move_positions:
                 if board.is_empty(pos):
                     moves.append(Move(curr_pos, pos))
@@ -27,4 +23,4 @@ class King(Base):
                         moves.append(Move(curr_pos, pos, is_capture=True))
 
         moves = [move for move in moves if board.is_within_bounds(move.to_position)]
-        return moves
+        return move_patterns

@@ -3,6 +3,7 @@ from .color import Color
 from .value_objects import PieceType, BoardGeometry, Position, Move
 from dataclasses import dataclass, field
 
+
 @dataclass
 class Board:
     geometry: BoardGeometry = BoardGeometry(width=8, height=12, depth=3)
@@ -36,5 +37,3 @@ class Board:
 
     def place_piece(self, piece_type: "PieceType", color: Color, position: Position) -> None:
         self.pieces[position] = (piece_type, color)
-
-
