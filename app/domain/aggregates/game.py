@@ -30,8 +30,8 @@ class Game:
         starting_positions = {
             (PieceType.SYLPH, Color.WHITE): [Position(x, 1, 2) for x in range(0, board_geometry.width, 2)],
             (PieceType.SYLPH, Color.BLACK): [Position(x, board_geometry.height - 2, 2) for x in
-                                             range(0, board_geometry.width, 2)]
-
+                                             range(0, board_geometry.width, 2)],
+            (PieceType.KING, Color.WHITE): [Position(6, 0, 1)]
         }
 
         board = Board(board_geometry, starting_positions)

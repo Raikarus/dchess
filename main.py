@@ -3,14 +3,15 @@ import uvicorn
 from app.core.container import Container
 from app.presentation.api.routers import gameRouter
 from app.domain.aggregates import Game
-from app.domain.piece_behaviours import King
+from app.domain.value_objects import Position
 
 container = Container()
 container.init_resources()
 
-king = King()
-king()
-
+game = Game(["p1", "p2"])
+king = game.board.get_piece_at(Position(6, 0, 1))
+print(container.piece_behavior_map)
+print(f"King is {king}")
 # app = fastapi.FastAPI()
 #
 # app.include_router(gameRouter)
