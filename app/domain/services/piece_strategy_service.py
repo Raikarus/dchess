@@ -3,7 +3,7 @@ from app.core import Container
 from app.domain.value_objects import Move
 
 
-class GetStrategy:
+class PieceStrategyService:
     @inject
     def __init__(self, game: "Game", piece_behavior_map: dict = Provide[Container.piece_behaviour_map]):
         self.piece_behavior_map = piece_behavior_map
@@ -25,6 +25,6 @@ class GetStrategy:
                     target_piece_type, target_piece_color = None, None
                 if self.board.is_within_bounds(new_piece_position) and target_piece_color != piece_color:
                     is_capture = target_piece_color is not None
-                    promote_type = strategy_provider.promote_type
+                    promote_type = strategy_provider.get_promote_type()
                     possible_moves += [Move(piece_position, new_piece_position, is_capture, promote_type)]
         return possible_moves

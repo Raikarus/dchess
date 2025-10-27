@@ -15,5 +15,5 @@ class Base(ABC):
     def is_promote(self, positions: List["Position"]) -> bool:
         return False
 
-    def promote_type(self) -> Optional["PieceType"]:
+    def get_promote_type(self) -> Optional["PieceType"]:
         return None

@@ -1,3 +1,3 @@
-from .get_strategy import GetStrategy
+from .piece_strategy_service import PieceStrategyService
 
-__all__ = ["GetStrategy"]
+__all__ = ["PieceStrategyService"]
