@@ -13,7 +13,7 @@ strategy_service = GetStrategy(game)
 piece_position = Position(6, 0, 1)
 piece = game.board.get_piece_at(piece_position)
 print(f"Piece is {piece}")
-print(strategy_service.get_strategy(piece[0], piece_position))
+print(strategy_service.get_strategy(piece_position))
 # app = fastapi.FastAPI()
 #
 # app.include_router(gameRouter)

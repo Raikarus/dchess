@@ -6,3 +6,4 @@ from app.domain import Vector
 class MovePattern:
     move_vector: Vector
     attack_vector: Vector
+    only_in_attack: bool = False
