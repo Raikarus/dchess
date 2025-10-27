@@ -1,8 +1,8 @@
 from .color import Color
-from .position import Position
-from .move import Move
 from .board import Board
-from .game_manager import GameManager
+from .vector import Vector
+from .move_pattern import MovePattern
+from app.domain.aggregates.game import Game
 
 
-__all__ = ['Color', 'Position', 'Move', 'Board', 'GameManager']
+__all__ = ['Color', 'Board', 'Game', 'Vector', 'MovePattern']

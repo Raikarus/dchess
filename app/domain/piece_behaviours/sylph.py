@@ -1,14 +1,14 @@
 from typing import List
-from .piece import Piece, register_piece
-from ..position import Position
-from ..move import Move
+from app.domain.value_objects import PieceType, Position, Move
 from ..color import Color
+from .base import Base
+from app.domain.board import Board
 
 
-@register_piece("sylf")
-class Sylf(Piece):
+class Sylph(Base):
 
-    def possible_moves(self, board: "Board") -> List["Move"]:
+    def __call__(self, board: Board) -> List["MovePattern"]:
+        return 1
         moves = []
         curr_pos = self.position
         x, y, z = curr_pos.x, curr_pos.y, curr_pos.z
@@ -36,11 +36,9 @@ class Sylf(Piece):
             if board.is_empty(above_pos):
                 moves.append(Move(curr_pos, above_pos))
 
-            for pos in board.get_start_positions_for_piece('sylf', self.color):
+            for pos in board.get_start_positions_for_piece('sylph', self.color):
                 if board.is_empty(pos):
                     moves.append(Move(curr_pos, pos))
         moves = [move for move in moves if board.is_within_bounds(move.to_position)]
         return moves
 
-    def can_promote(self) -> bool:
-        return False
