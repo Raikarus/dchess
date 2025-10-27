@@ -4,9 +4,8 @@ from app.core import Container
 
 def register_behavior(piece_type: "PieceType"):
     @inject
-    def wrapper(cls, piece_behavior_map=Provide[Container.piece_behavior_map]):
-        piece_behavior_map.append((cls, piece_type))
-        print(piece_behavior_map)
+    def wrapper(cls, piece_behaviour_map: dict = Provide[Container.piece_behaviour_map]):
+        piece_behaviour_map[piece_type] = cls
         return cls
 
     return wrapper
