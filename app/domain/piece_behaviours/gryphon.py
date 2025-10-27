@@ -1,11 +1,9 @@
 from typing import List
-from app.domain.utils import register_behavior
 from .base import Base
 from app.domain.value_objects import Move, Position, PieceType
 from app.domain import Board
 
 
-@register_behavior(PieceType.GRYPHON)
 class Gryphon(Base):
     def __call__(self, board: Board) -> List[Move]:
         moves = []

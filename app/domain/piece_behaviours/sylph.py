@@ -1,12 +1,10 @@
 from typing import List
 from app.domain.value_objects import PieceType, Position, Move
 from ..color import Color
-from app.domain.utils import register_behavior
 from .base import Base
 from app.domain.board import Board
 
 
-@register_behavior(PieceType.SYLPH)
 class Sylph(Base):
 
     def __call__(self, board: Board) -> List["MovePattern"]:
