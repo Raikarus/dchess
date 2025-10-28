@@ -1,6 +1,7 @@
 from dependency_injector.wiring import Provide, inject
 from app.core import Container
 from app.domain.value_objects import Move
+from typing import List
 
 
 class PieceStrategyService:
@@ -9,7 +10,7 @@ class PieceStrategyService:
         self.piece_behavior_map = piece_behavior_map
         self.board = game.board
 
-    def get_strategy(self, piece_position: "Position"):
+    def get_strategy(self, piece_position: "Position") -> List[Move]:
         piece_type, piece_color = self.board.get_piece_at(piece_position)
         strategy_provider = self.piece_behavior_map.get(piece_type)
         if not strategy_provider:
