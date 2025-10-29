@@ -19,9 +19,10 @@ async def make_move(move: MoveRequest, game_manager: Game = Depends(Provide[Cont
     to_pos = Position(move.to_x, move.to_y, move.to_z)
     move_obj = Move(from_position=from_pos, to_position=to_pos)
 
-    success = game_manager.make_move(move_obj)
-    if not success:
-        raise HTTPException(status_code=400, detail="Invalid move")
+    try:
+        game_manager.move_piece(move_obj)
+    except Exception as err:
+        raise HTTPException(status_code=400, detail=f"Invalid move: {err}")
     return MoveResponse(success=True, message="Move made successfully")
 
 

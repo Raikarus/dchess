@@ -42,6 +42,12 @@ class Game:
 
         return board
 
-    def move_piece(self, move: Move) -> bool:
-        # self.board.move
-        pass
+    def move_piece(self, move: Move) -> None:
+        captured = self.board.move_piece(move)
+
+        self.move_history.append(move)
+        # Можно добавить обработку смены хода, проверку шаха, мата и т.п.
+        self.switch_turn()
+
+    def switch_turn(self):
+        self.current_turn = Color.BLACK if self.current_turn == Color.WHITE else Color.WHITE

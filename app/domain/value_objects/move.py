@@ -7,5 +7,4 @@ from app.domain.value_objects.position import Position
 class Move:
     from_position: Position
     to_position: Position
-    is_capture: bool = False
-    promotion_piece_type: Optional["PieceType"] = None
+    attack_position: Optional[Position] = None

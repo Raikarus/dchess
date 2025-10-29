@@ -10,7 +10,7 @@ class PieceStrategyService:
         self.piece_behavior_map = piece_behavior_map
         self.board = game.board
 
-    def get_strategy(self, piece_position: "Position") -> List[Move]:
+    def get_moves_from(self, piece_position: "Position") -> List[Move]:
         piece_type, piece_color = self.board.get_piece_at(piece_position)
         strategy_provider = self.piece_behavior_map.get(piece_type)
         if not strategy_provider:
@@ -20,12 +20,16 @@ class PieceStrategyService:
         for move_pattern in move_patterns:
             for i in range(move_pattern.move_vector.length):
                 new_piece_position = piece_position + move_pattern.move_vector.dPos * (i + 1)
-                if not self.board.is_empty(new_piece_position):
+                attack_position = piece_position + move_pattern.attack_vector.dPos * (i + 1)
+                if not self.board.is_empty(attack_position):
                     target_piece_type, target_piece_color = self.board.get_piece_at(new_piece_position)
                 else:
                     target_piece_type, target_piece_color = None, None
-                if self.board.is_within_bounds(new_piece_position) and target_piece_color != piece_color:
-                    is_capture = target_piece_color is not None
-                    promote_type = strategy_provider.get_promote_type()
-                    possible_moves += [Move(piece_position, new_piece_position, is_capture, promote_type)]
+                if self.board.is_within_bounds(new_piece_position):
+                    if target_piece_color is not None and target_piece_color != piece_color:
+                        possible_moves += [Move(piece_position, new_piece_position, attack_position)]
+                        break
+                    if target_piece_color is None and not move_pattern.only_in_attack:
+                        possible_moves += [Move(piece_position, new_piece_position)]
+
         return possible_moves

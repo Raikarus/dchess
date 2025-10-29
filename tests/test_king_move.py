@@ -37,7 +37,7 @@ def piece_strategy_service_and_position(request, board):
 
 def test_piece_strategy_moves(piece_strategy_service_and_position):
     service, position, piece_type = piece_strategy_service_and_position
-    moves = service.get_strategy(position)
+    moves = service.get_moves_from(position)
     # Все ходы в пределах доски
     for move in moves:
         assert service.board.is_within_bounds(move.to_position)
