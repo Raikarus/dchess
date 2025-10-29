@@ -3,6 +3,7 @@ from enum import Enum
 from app.domain.color import Color
 from app.domain.board import Board
 from app.domain.value_objects import BoardGeometry, PieceType, Position, Move
+from copy import deepcopy
 
 
 class GameState(Enum):
@@ -44,6 +45,15 @@ class Game:
         return board
 
     def move_piece(self, move: Move) -> None:
+        piece_info = self.board.get_piece_at(move.from_position)
+        if piece_info is None:
+            raise ValueError(f"No piece at {move.from_position}")
+
+        piece_type, piece_color = piece_info
+
+        if piece_color != self.current_turn:
+            raise ValueError(f"It's {self.current_turn} turn, cannot move piece of color {piece_color}")
+
         possible_moves = self.get_moves_from(move.from_position)
         move_found = False
         for possible_move in possible_moves:
@@ -53,9 +63,86 @@ class Game:
                 break
         if not move_found:
             raise ValueError(f"{move} is impossible")
+
+        board_copy = deepcopy(self.board)
+        board_copy.move_piece(move)
+
+        if self.is_in_check(board_copy, piece_color):
+            raise ValueError("Move would put or leave king in check")
+
         self.board.move_piece(move)
         self.move_history.append(move)
         self.switch_turn()
+
+        self.update_game_state()
+
+    def is_in_check(self, board: Board, color: Color) -> bool:
+        king_position = None
+        for pos, (ptype, pcolor) in board.pieces.items():
+            if ptype == PieceType.KING and pcolor == color:
+                king_position = pos
+                break
+        if king_position is None:
+            return True
+
+        opponent_color = Color.BLACK if color == Color.WHITE else Color.WHITE
+        for pos, (ptype, pcolor) in board.pieces.items():
+            if pcolor == opponent_color:
+                moves = self.get_moves_from(pos)
+                for move in moves:
+                    board_copy = deepcopy(board)
+                    board_copy.move_piece(move)
+                    if self.is_in_check(board_copy, pcolor):
+                        continue
+                    if move.attack_position == king_position:
+                        return True
+        return False
+
+    def is_checkmate(self, color: Color) -> bool:
+        if not self.is_in_check(self.board, color):
+            return False
+
+        for pos, (ptype, pcolor) in self.board.pieces.items():
+            if pcolor == color:
+                moves = self.get_moves_from(pos)
+                for move in moves:
+                    board_copy = deepcopy(self.board)
+                    board_copy.move_piece(move)
+                    if not self.is_in_check(board_copy, color):
+                        return False
+        return True
+
+    def is_stalemate(self, color: Color) -> bool:
+        if self.is_in_check(self.board, color):
+            return False
+        for pos, (ptype, pcolor) in self.board.pieces.items():
+            if pcolor == color:
+                moves = self.get_moves_from(pos)
+                for move in moves:
+                    board_copy = deepcopy(self.board)
+                    board_copy.move_piece(move)
+                    if not self.is_in_check(board_copy, color):
+                        return False
+        return True
+
+    def update_game_state(self):
+        if self.is_checkmate(self.current_turn):
+            self.state = GameState.CHECKMATE
+        elif self.is_stalemate(self.current_turn):
+            self.state = GameState.STALEMATE
+        elif self.is_in_check(self.board, self.current_turn):
+            self.state = GameState.CHECK
+        else:
+            self.state = GameState.ONGOING
+
+    def undo_move(self):
+        if not self.move_history:
+            raise ValueError("No moves to undo")
+        last_move = self.move_history.pop()
+        self.board = self._initialize_board()
+        for move in self.move_history:
+            self.board.move_piece(move)
+        self.switch_turn()  # Отмена хода меняет текущего игрока обратно
 
     def switch_turn(self):
         self.current_turn = Color.BLACK if self.current_turn == Color.WHITE else Color.WHITE
@@ -66,7 +153,7 @@ class Game:
         strategy_provider = self.piece_behaviour_map.get(piece_type)
         if not strategy_provider:
             raise ValueError(f"No strategy for {piece_type}")
-        move_patterns = strategy_provider(piece_position)  # создается или берется синглтон
+        move_patterns = strategy_provider(piece_position)
         possible_moves = []
         for move_pattern in move_patterns:
             for i in range(move_pattern.move_vector.length):

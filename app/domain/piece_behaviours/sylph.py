@@ -1,44 +1,24 @@
 from typing import List
-from app.domain.value_objects import PieceType, Position, Move
-from ..color import Color
 from .base import Base
-from app.domain.board import Board
+from app.domain import Board
+from app.domain.value_objects import Position
+from app.domain import MovePattern, Vector
 
 
 class Sylph(Base):
 
-    def __call__(self, board: Board) -> List["MovePattern"]:
-        return 1
-        moves = []
-        curr_pos = self.position
-        x, y, z = curr_pos.x, curr_pos.y, curr_pos.z
-
-        if z == 2:
-            forward_y = y + 1 if self.color == Color.WHITE else y - 1
-            diag_positions = [
-                Position(x - 1, forward_y, 2),
-                Position(x + 1, forward_y, 2)
-            ]
-            for pos in diag_positions:
-                if board.is_empty(pos):
-                    moves.append(Move(curr_pos, pos))
-            check_pos = [
-                Position(x, y + 1 if self.color == Color.WHITE else y - 1, z),
-                Position(x, y, z - 1)
-            ]
-            for pos in check_pos:
-                target_piece = board.get_piece_at(pos)
-                if target_piece and target_piece.color != self.color:
-                    moves.append(Move(curr_pos, pos, is_capture=True))
-
-        elif z == 1:
-            above_pos = Position(x, y, z + 1)
-            if board.is_empty(above_pos):
-                moves.append(Move(curr_pos, above_pos))
-
-            for pos in board.get_start_positions_for_piece('sylph', self.color):
-                if board.is_empty(pos):
-                    moves.append(Move(curr_pos, pos))
-        moves = [move for move in moves if board.is_within_bounds(move.to_position)]
-        return moves
-
+    def __call__(self, position: Position, board: Board) -> List[MovePattern]:
+        piece_type, color = board.get_piece_at(position)
+        vectors = []
+        forward = 1 if color == color.WHITE else -1
+        move_patterns = []
+        if position.z == 2:
+            vectors += [Vector(Position(0, 0, -1), 1), Vector(Position(0, forward, 0), 1)]
+            move_patterns = [MovePattern(vector, vector, only_in_attack=True) for vector in vectors]
+        elif position.z == 1:
+            start_positions = board.start_positions[(piece_type, color)]
+            vectors += [Vector(Position(start_position.x - position.x, start_position.y - position.y, 1), 1) for
+                        start_position in start_positions]
+            move_patterns = [MovePattern(vector, Vector(Position(0, 0, 0), 0), only_in_attack=True) for vector in
+                             vectors]
+        return move_patterns
