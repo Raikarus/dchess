@@ -157,10 +157,11 @@ class Game:
             for i in range(move_pattern.move_vector.length):
                 new_piece_position = piece_position + move_pattern.move_vector.dPos * (i + 1)
                 attack_position = piece_position + move_pattern.attack_vector.dPos * (i + 1)
-                if not board.is_empty(attack_position):
+                if not board.is_empty(attack_position) and attack_position != piece_position:
                     target_piece_type, target_piece_color = board.get_piece_at(attack_position)
                 else:
                     target_piece_type, target_piece_color = None, None
+
                 if board.is_within_bounds(new_piece_position):
                     if target_piece_color is not None and target_piece_color != piece_color:
                         possible_moves += [Move(piece_position, new_piece_position, attack_position)]
@@ -168,6 +169,9 @@ class Game:
                     if target_piece_color is not None and target_piece_color == piece_color:
                         break
                     if target_piece_color is None and not move_pattern.only_in_attack:
-                        possible_moves += [Move(piece_position, new_piece_position)]
+                        if board.is_empty(new_piece_position):
+                            possible_moves += [Move(piece_position, new_piece_position)]
+                        else:
+                            break
 
         return possible_moves
