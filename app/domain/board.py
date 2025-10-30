@@ -10,39 +10,6 @@ class Board:
     start_positions: Dict[Tuple["PieceType", Color], List[Position]] = field(default_factory=dict)
     pieces: Dict[Position, Tuple["PieceType", Color]] = field(default_factory=dict)
 
-    def __str__(self):
-        board_str = ""
-        piece_symbols = {
-            PieceType.KING: "K",
-            PieceType.SYLPH: "S",
-            PieceType.GRYPHON: "G",
-            # Добавьте все типы фигур с их обозначениями
-        }
-        color_symbols = {
-            Color.WHITE: "W",
-            Color.BLACK: "B",
-            # При необходимости добавьте цвета
-        }
-
-        for z in range(self.geometry.depth):
-            board_str += f"Level z={z}:\n"
-            for y in range(self.geometry.height):
-                row_str = ""
-                for x in range(self.geometry.width):
-                    pos = Position(x, y, z)
-                    piece = self.get_piece_at(pos)
-                    if piece:
-                        piece_type, color = piece
-                        piece_char = piece_symbols.get(piece_type, "?")
-                        color_char = color_symbols.get(color, "?")
-                        row_str += f"{piece_char}{color_char} "
-                    else:
-                        row_str += ".  "
-                board_str += row_str.rstrip() + "\n"
-            board_str += "-" * (self.geometry.width * 3) + "\n"
-        print(board_str)
-        return board_str
-
     def is_within_bounds(self, position: Position) -> bool:
         return (0 <= position.x < self.geometry.width and
                 0 <= position.y < self.geometry.height and
