@@ -33,7 +33,8 @@ class Game:
             (PieceType.SYLPH, Color.WHITE): [Position(x, 1, 2) for x in range(0, board_geometry.width, 2)],
             (PieceType.SYLPH, Color.BLACK): [Position(x, board_geometry.height - 2, 2) for x in
                                              range(0, board_geometry.width, 2)],
-            (PieceType.KING, Color.WHITE): [Position(6, 0, 1)]
+            (PieceType.KING, Color.WHITE): [Position(6, 4, 1)],
+            (PieceType.KING, Color.BLACK): [Position(4, 4, 1)]
         }
 
         board = Board(board_geometry, starting_positions)
@@ -45,6 +46,8 @@ class Game:
         return board
 
     def move_piece(self, move: Move) -> None:
+        if self.state != GameState.ONGOING or self.state != GameState.CHECK:
+            raise ValueError(f"Game is over: {self.state}")
         piece_info = self.board.get_piece_at(move.from_position)
         if piece_info is None:
             raise ValueError(f"No piece at {move.from_position}")
@@ -54,7 +57,7 @@ class Game:
         if piece_color != self.current_turn:
             raise ValueError(f"It's {self.current_turn} turn, cannot move piece of color {piece_color}")
 
-        possible_moves = self.get_moves_from(move.from_position)
+        possible_moves = self.get_moves_from(self.board, move.from_position)
         move_found = False
         for possible_move in possible_moves:
             if (move.from_position, move.to_position) == (possible_move.from_position, possible_move.to_position):
@@ -88,12 +91,8 @@ class Game:
         opponent_color = Color.BLACK if color == Color.WHITE else Color.WHITE
         for pos, (ptype, pcolor) in board.pieces.items():
             if pcolor == opponent_color:
-                moves = self.get_moves_from(pos)
+                moves = self.get_moves_from(board, pos)
                 for move in moves:
-                    board_copy = deepcopy(board)
-                    board_copy.move_piece(move)
-                    if self.is_in_check(board_copy, pcolor):
-                        continue
                     if move.attack_position == king_position:
                         return True
         return False
@@ -104,7 +103,7 @@ class Game:
 
         for pos, (ptype, pcolor) in self.board.pieces.items():
             if pcolor == color:
-                moves = self.get_moves_from(pos)
+                moves = self.get_moves_from(self.board, pos)
                 for move in moves:
                     board_copy = deepcopy(self.board)
                     board_copy.move_piece(move)
@@ -117,7 +116,7 @@ class Game:
             return False
         for pos, (ptype, pcolor) in self.board.pieces.items():
             if pcolor == color:
-                moves = self.get_moves_from(pos)
+                moves = self.get_moves_from(self.board, pos)
                 for move in moves:
                     board_copy = deepcopy(self.board)
                     board_copy.move_piece(move)
@@ -147,25 +146,26 @@ class Game:
     def switch_turn(self):
         self.current_turn = Color.BLACK if self.current_turn == Color.WHITE else Color.WHITE
 
-    def get_moves_from(self, piece_position: "Position") -> List[Move]:
-        board = self.board
+    def get_moves_from(self, board: "Board", piece_position: "Position") -> List[Move]:
         piece_type, piece_color = board.get_piece_at(piece_position)
         strategy_provider = self.piece_behaviour_map.get(piece_type)
         if not strategy_provider:
             raise ValueError(f"No strategy for {piece_type}")
-        move_patterns = strategy_provider(piece_position)
+        move_patterns = strategy_provider(piece_position, self.board)
         possible_moves = []
         for move_pattern in move_patterns:
             for i in range(move_pattern.move_vector.length):
                 new_piece_position = piece_position + move_pattern.move_vector.dPos * (i + 1)
                 attack_position = piece_position + move_pattern.attack_vector.dPos * (i + 1)
                 if not board.is_empty(attack_position):
-                    target_piece_type, target_piece_color = board.get_piece_at(new_piece_position)
+                    target_piece_type, target_piece_color = board.get_piece_at(attack_position)
                 else:
                     target_piece_type, target_piece_color = None, None
                 if board.is_within_bounds(new_piece_position):
                     if target_piece_color is not None and target_piece_color != piece_color:
                         possible_moves += [Move(piece_position, new_piece_position, attack_position)]
+                        break
+                    if target_piece_color is not None and target_piece_color == piece_color:
                         break
                     if target_piece_color is None and not move_pattern.only_in_attack:
                         possible_moves += [Move(piece_position, new_piece_position)]
