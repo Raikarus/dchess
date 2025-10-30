@@ -11,3 +11,6 @@ class PieceType(Enum):
     KING = 0
     SYLPH = 1
     GRYPHON = 2
+    DRAGON = 3
+    WARRIOR = 4
+    HERO = 5

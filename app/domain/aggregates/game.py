@@ -37,7 +37,11 @@ class Game:
             (PieceType.KING, Color.BLACK): [Position(6, board_geometry.height - 1, 1)],
             (PieceType.GRYPHON, Color.WHITE): [Position(2, 0, 2), Position(board_geometry.width - 3, 0, 2)],
             (PieceType.GRYPHON, Color.BLACK): [Position(2, board_geometry.height - 1, 2),
-                                               Position(board_geometry.width - 3, board_geometry.height - 1, 2)]
+                                               Position(board_geometry.width - 3, board_geometry.height - 1, 2)],
+            (PieceType.DRAGON, Color.WHITE): [Position(6, 0, 2)],
+            (PieceType.DRAGON, Color.BLACK): [Position(6, board_geometry.height - 1, 2)],
+            (PieceType.WARRIOR, Color.WHITE): [Position(i, 1, 1) for i in range(board_geometry.width)],
+            (PieceType.WARRIOR, Color.BLACK): [Position(i, 6, 1) for i in range(board_geometry.width)],
         }
 
         board = Board(board_geometry, starting_positions)
@@ -78,6 +82,8 @@ class Game:
 
         self.board.move_piece(move)
         self.move_history.append(move)
+        self.try_promote_piece(move.to_position)
+
         self.switch_turn()
 
         self.update_game_state()
@@ -178,3 +184,13 @@ class Game:
                             break
 
         return possible_moves
+
+    def try_promote_piece(self, position: Position) -> None:
+        piece_type, piece_color = self.board.get_piece_at(position)
+        strategy_provider = self.piece_behaviour_map.get(piece_type)
+        if not strategy_provider:
+            raise ValueError(f"No strategy for {piece_type}")
+        is_promote = strategy_provider.is_promote(position)
+        if is_promote:
+            promoted_piece_type = strategy_provider.get_promote_type()
+            self.board.place_piece(promoted_piece_type, piece_color, position)

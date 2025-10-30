@@ -32,7 +32,7 @@ class Board:
         if moving_piece is None:
             raise ValueError(f"No piece at source position {move.from_position}")
 
-        target_piece = self.get_piece_at(move.to_position)
+        target_piece = self.get_piece_at(move.attack_position)
 
         # Удаляем фигуру с начальной позиции
         self.pieces.pop(move.from_position)
@@ -41,7 +41,7 @@ class Board:
         captured_piece = None
         if target_piece is not None and target_piece[1] != moving_piece[1]:
             captured_piece = target_piece
-            self.pieces.pop(move.to_position)
+            self.pieces.pop(move.attack_position)
 
         # Ставим фигуру на новую позицию
         self.pieces[move.to_position] = moving_piece

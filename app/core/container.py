@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 from app.domain.aggregates import Game
 from app.domain.value_objects import PieceType
-from app.domain.piece_behaviours import (King, Sylph, Gryphon)
+from app.domain.piece_behaviours import *
 
 
 class Container(containers.DeclarativeContainer):
@@ -15,6 +15,9 @@ class Container(containers.DeclarativeContainer):
         PieceType.KING: providers.Singleton(King),
         PieceType.SYLPH: providers.Singleton(Sylph),
         PieceType.GRYPHON: providers.Singleton(Gryphon),
+        PieceType.DRAGON: providers.Singleton(Dragon),
+        PieceType.WARRIOR: providers.Singleton(Warrior),
+        PieceType.HERO: providers.Singleton(Hero),
     })
     game_manager = providers.Singleton(Game, players=["White Player", "Black Player"],
                                        piece_behaviour_map=piece_behaviour_map)
