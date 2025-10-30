@@ -33,8 +33,8 @@ class Game:
             (PieceType.SYLPH, Color.WHITE): [Position(x, 1, 2) for x in range(0, board_geometry.width, 2)],
             (PieceType.SYLPH, Color.BLACK): [Position(x, board_geometry.height - 2, 2) for x in
                                              range(0, board_geometry.width, 2)],
-            (PieceType.KING, Color.WHITE): [Position(6, 4, 1)],
-            (PieceType.KING, Color.BLACK): [Position(4, 4, 1)]
+            (PieceType.KING, Color.WHITE): [Position(6, 0, 1)],
+            (PieceType.KING, Color.BLACK): [Position(6, board_geometry.height - 1, 1)]
         }
 
         board = Board(board_geometry, starting_positions)
@@ -46,7 +46,7 @@ class Game:
         return board
 
     def move_piece(self, move: Move) -> None:
-        if self.state != GameState.ONGOING or self.state != GameState.CHECK:
+        if self.state != GameState.ONGOING and self.state != GameState.CHECK:
             raise ValueError(f"Game is over: {self.state}")
         piece_info = self.board.get_piece_at(move.from_position)
         if piece_info is None:
