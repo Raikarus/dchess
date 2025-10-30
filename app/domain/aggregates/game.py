@@ -34,7 +34,10 @@ class Game:
             (PieceType.SYLPH, Color.BLACK): [Position(x, board_geometry.height - 2, 2) for x in
                                              range(0, board_geometry.width, 2)],
             (PieceType.KING, Color.WHITE): [Position(6, 0, 1)],
-            (PieceType.KING, Color.BLACK): [Position(6, board_geometry.height - 1, 1)]
+            (PieceType.KING, Color.BLACK): [Position(6, board_geometry.height - 1, 1)],
+            (PieceType.GRYPHON, Color.WHITE): [Position(2, 0, 2), Position(board_geometry.width - 3, 0, 2)],
+            (PieceType.GRYPHON, Color.BLACK): [Position(2, board_geometry.height - 1, 2),
+                                               Position(board_geometry.width - 3, board_geometry.height - 1, 2)]
         }
 
         board = Board(board_geometry, starting_positions)
