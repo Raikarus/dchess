@@ -14,3 +14,6 @@ class PieceType(Enum):
     DRAGON = 3
     WARRIOR = 4
     HERO = 5
+    OLIPHANT = 6
+    UNICORN = 7
+    THIEF = 8

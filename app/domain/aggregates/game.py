@@ -44,7 +44,16 @@ class Game:
             (PieceType.WARRIOR, Color.BLACK): [Position(i, 6, 1) for i in range(board_geometry.width)],
             (PieceType.HERO, Color.WHITE): [Position(2, 0, 1), Position(board_geometry.width - 3, 0, 1)],
             (PieceType.HERO, Color.BLACK): [Position(2, board_geometry.height - 1, 1),
-                                            Position(board_geometry.width - 3, board_geometry.height - 1, 1)]
+                                            Position(board_geometry.width - 3, board_geometry.height - 1, 1)],
+            (PieceType.OLIPHANT, Color.WHITE): [Position(0, 0, 1), Position(board_geometry.width - 1, 0, 1)],
+            (PieceType.OLIPHANT, Color.BLACK): [Position(0, board_geometry.height - 1, 1),
+                                                Position(board_geometry.width - 1, board_geometry.height - 1, 1)],
+            (PieceType.UNICORN, Color.WHITE): [Position(1, 0, 1), Position(board_geometry.width - 2, 0, 1)],
+            (PieceType.UNICORN, Color.BLACK): [Position(1, board_geometry.height - 1, 1),
+                                               Position(board_geometry.width - 2, board_geometry.height - 1, 1)],
+            (PieceType.THIEF, Color.WHITE): [Position(3, 0, 1), Position(board_geometry.width - 4, 0, 1)],
+            (PieceType.THIEF, Color.BLACK): [Position(3, board_geometry.height - 1, 1),
+                                             Position(board_geometry.width - 4, board_geometry.height - 1, 1)]
         }
 
         board = Board(board_geometry, starting_positions)
