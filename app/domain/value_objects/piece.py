@@ -19,3 +19,4 @@ class PieceType(Enum):
     THIEF = 8
     CLERIC = 9
     MAGE = 10
+    PALADIN = 11

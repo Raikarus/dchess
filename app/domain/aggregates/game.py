@@ -58,6 +58,8 @@ class Game:
             (PieceType.CLERIC, Color.BLACK): [Position(4, board_geometry.height - 1, 1)],
             (PieceType.MAGE, Color.WHITE): [Position(5, 0, 1)],
             (PieceType.MAGE, Color.BLACK): [Position(5, board_geometry.height - 1, 1)],
+            (PieceType.PALADIN, Color.WHITE): [Position(7, 0, 1)],
+            (PieceType.PALADIN, Color.BLACK): [Position(7, board_geometry.height - 1, 1)],
         }
 
         board = Board(board_geometry, starting_positions)

@@ -10,5 +10,7 @@ from .unicorn import Unicorn
 from .thief import Thief
 from .cleric import Cleric
 from .mage import Mage
+from .paladin import Paladin
 
-__all__ = ['Base', 'Sylph', 'Gryphon', 'King', 'Dragon', 'Warrior', 'Hero', 'Oliphant', 'Unicorn', 'Thief', 'Cleric', 'Mage']
+__all__ = ['Base', 'Sylph', 'Gryphon', 'King', 'Dragon', 'Warrior', 'Hero', 'Oliphant', 'Unicorn', 'Thief', 'Cleric',
+           'Mage', 'Paladin']
