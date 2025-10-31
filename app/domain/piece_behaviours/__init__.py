@@ -8,5 +8,6 @@ from .hero import Hero
 from .oliphant import Oliphant
 from .unicorn import Unicorn
 from .thief import Thief
+from .cleric import Cleric
 
-__all__ = ['Base', 'Sylph', 'Gryphon', 'King', 'Dragon', 'Warrior', 'Hero', 'Oliphant', 'Unicorn', 'Thief']
+__all__ = ['Base', 'Sylph', 'Gryphon', 'King', 'Dragon', 'Warrior', 'Hero', 'Oliphant', 'Unicorn', 'Thief', 'Cleric']

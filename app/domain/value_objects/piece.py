@@ -17,3 +17,4 @@ class PieceType(Enum):
     OLIPHANT = 6
     UNICORN = 7
     THIEF = 8
+    CLERIC = 9
