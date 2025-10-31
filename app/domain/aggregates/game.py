@@ -95,7 +95,7 @@ class Game:
             enemy_unit = self.board.get_piece_at(enemy_position)
             if enemy_unit:
                 enemy_type, enemy_color = enemy_unit
-                if enemy_type == PieceType.BASILISK and enemy_color != piece_type:
+                if enemy_type == PieceType.BASILISK and enemy_color != piece_color:
                     raise ValueError(f"Ooops, this piece is frozen by Basilisk")
 
         possible_moves = self.get_moves_from(self.board, move.from_position)
