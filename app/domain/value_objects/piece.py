@@ -20,3 +20,4 @@ class PieceType(Enum):
     CLERIC = 9
     MAGE = 10
     PALADIN = 11
+    DWARF = 12

@@ -60,6 +60,9 @@ class Game:
             (PieceType.MAGE, Color.BLACK): [Position(5, board_geometry.height - 1, 1)],
             (PieceType.PALADIN, Color.WHITE): [Position(7, 0, 1)],
             (PieceType.PALADIN, Color.BLACK): [Position(7, board_geometry.height - 1, 1)],
+            (PieceType.DWARF, Color.WHITE): [Position(i, 1, 0) for i in range(1, board_geometry.width, 2)],
+            (PieceType.DWARF, Color.BLACK): [Position(i, board_geometry.height - 2, 0) for i in
+                                             range(1, board_geometry.width, 2)]
         }
 
         board = Board(board_geometry, starting_positions)
