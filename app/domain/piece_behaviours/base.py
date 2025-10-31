@@ -12,7 +12,7 @@ class Base(ABC):
         """
         pass
 
-    def is_promote(self, positions: List["Position"]) -> bool:
+    def is_promote(self, *args) -> bool:
         return False
 
     def get_promote_type(self) -> Optional["PieceType"]:

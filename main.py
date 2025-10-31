@@ -9,9 +9,7 @@ container.init_resources()
 app = fastapi.FastAPI()
 app.include_router(gameRouter)
 
-# Важно: "вайрим" контейнер после создания app
 container.wire(modules=[__name__])
 
 if __name__ == "__main__":
-    # Запуск сервера только если исполняется напрямую
     uvicorn.run(app, host="127.0.0.1", port=8000)
