@@ -191,6 +191,12 @@ class Game:
 
     def get_moves_from(self, board: "Board", piece_position: "Position") -> List[Move]:
         piece_type, piece_color = board.get_piece_at(piece_position)
+        if piece_position.z == 1:
+            piece_below = board.get_piece_at(Position(piece_position.x, piece_position.y, 0))
+            if piece_below:
+                enemy_type, enemy_color = piece_below
+                if enemy_type == PieceType.BASILISK and enemy_color != piece_color:
+                    return []
         strategy_provider = self.piece_behaviour_map.get(piece_type)
         if not strategy_provider:
             raise ValueError(f"No strategy for {piece_type}")
