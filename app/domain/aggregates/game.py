@@ -42,6 +42,9 @@ class Game:
             (PieceType.DRAGON, Color.BLACK): [Position(6, board_geometry.height - 1, 2)],
             (PieceType.WARRIOR, Color.WHITE): [Position(i, 1, 1) for i in range(board_geometry.width)],
             (PieceType.WARRIOR, Color.BLACK): [Position(i, 6, 1) for i in range(board_geometry.width)],
+            (PieceType.HERO, Color.WHITE): [Position(2, 0, 1), Position(board_geometry.width - 3, 0, 1)],
+            (PieceType.HERO, Color.BLACK): [Position(2, board_geometry.height - 1, 1),
+                                            Position(board_geometry.width - 3, board_geometry.height - 1, 1)]
         }
 
         board = Board(board_geometry, starting_positions)
@@ -190,7 +193,7 @@ class Game:
         strategy_provider = self.piece_behaviour_map.get(piece_type)
         if not strategy_provider:
             raise ValueError(f"No strategy for {piece_type}")
-        is_promote = strategy_provider.is_promote(position)
+        is_promote = strategy_provider.is_promote(self.board, position)
         if is_promote:
             promoted_piece_type = strategy_provider.get_promote_type()
             self.board.place_piece(promoted_piece_type, piece_color, position)
