@@ -22,3 +22,4 @@ class PieceType(Enum):
     PALADIN = 11
     DWARF = 12
     BASILISK = 13
+    ELEMENTAL = 14

@@ -13,6 +13,7 @@ from .mage import Mage
 from .paladin import Paladin
 from .dwarf import Dwarf
 from .basilisk import Basilisk
+from .elemental import Elemental
 
 __all__ = ['Base', 'Sylph', 'Gryphon', 'King', 'Dragon', 'Warrior', 'Hero', 'Oliphant', 'Unicorn', 'Thief', 'Cleric',
-           'Mage', 'Paladin', 'Dwarf', 'Basilisk']
+           'Mage', 'Paladin', 'Dwarf', 'Basilisk', 'Elemental']

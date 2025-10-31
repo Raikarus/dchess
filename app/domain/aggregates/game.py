@@ -66,6 +66,8 @@ class Game:
             (PieceType.BASILISK, Color.WHITE): [Position(3, 0, 0), Position(board_geometry.width - 3, 0, 0)],
             (PieceType.BASILISK, Color.BLACK): [Position(3, board_geometry.height - 1, 0),
                                                 Position(board_geometry.width - 3, board_geometry.height - 1, 0)],
+            (PieceType.ELEMENTAL, Color.WHITE): [Position(6, 0, 0)],
+            (PieceType.ELEMENTAL, Color.BLACK): [Position(6, board_geometry.height - 1, 0)]
         }
 
         board = Board(board_geometry, starting_positions)
