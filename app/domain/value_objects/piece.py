@@ -18,3 +18,4 @@ class PieceType(Enum):
     UNICORN = 7
     THIEF = 8
     CLERIC = 9
+    MAGE = 10

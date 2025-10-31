@@ -55,7 +55,9 @@ class Game:
             (PieceType.THIEF, Color.BLACK): [Position(3, board_geometry.height - 1, 1),
                                              Position(board_geometry.width - 4, board_geometry.height - 1, 1)],
             (PieceType.CLERIC, Color.WHITE): [Position(4, 0, 1)],
-            (PieceType.CLERIC, Color.BLACK): [Position(4, board_geometry.height - 1, 1)]
+            (PieceType.CLERIC, Color.BLACK): [Position(4, board_geometry.height - 1, 1)],
+            (PieceType.MAGE, Color.WHITE): [Position(5, 0, 1)],
+            (PieceType.MAGE, Color.BLACK): [Position(5, board_geometry.height - 1, 1)],
         }
 
         board = Board(board_geometry, starting_positions)

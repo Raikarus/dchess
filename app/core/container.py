@@ -22,6 +22,7 @@ class Container(containers.DeclarativeContainer):
         PieceType.UNICORN: providers.Singleton(Unicorn),
         PieceType.THIEF: providers.Singleton(Thief),
         PieceType.CLERIC: providers.Singleton(Cleric),
+        PieceType.MAGE: providers.Singleton(Mage),
     })
     game_manager = providers.Singleton(Game, players=["White Player", "Black Player"],
                                        piece_behaviour_map=piece_behaviour_map)
