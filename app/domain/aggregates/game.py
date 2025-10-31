@@ -62,7 +62,10 @@ class Game:
             (PieceType.PALADIN, Color.BLACK): [Position(7, board_geometry.height - 1, 1)],
             (PieceType.DWARF, Color.WHITE): [Position(i, 1, 0) for i in range(1, board_geometry.width, 2)],
             (PieceType.DWARF, Color.BLACK): [Position(i, board_geometry.height - 2, 0) for i in
-                                             range(1, board_geometry.width, 2)]
+                                             range(1, board_geometry.width, 2)],
+            (PieceType.BASILISK, Color.WHITE): [Position(3, 0, 0), Position(board_geometry.width - 3, 0, 0)],
+            (PieceType.BASILISK, Color.BLACK): [Position(3, board_geometry.height - 1, 0),
+                                                Position(board_geometry.width - 3, board_geometry.height - 1, 0)],
         }
 
         board = Board(board_geometry, starting_positions)
@@ -84,6 +87,14 @@ class Game:
 
         if piece_color != self.current_turn:
             raise ValueError(f"It's {self.current_turn} turn, cannot move piece of color {piece_color}")
+
+        if move.from_position.z == 1:
+            enemy_position = Position(move.from_position.x, move.from_position.y, 0)
+            enemy_unit = self.board.get_piece_at(enemy_position)
+            if enemy_unit:
+                enemy_type, enemy_color = enemy_unit
+                if enemy_type == PieceType.BASILISK and enemy_color != piece_type:
+                    raise ValueError(f"Ooops, this piece is frozen by Basilisk")
 
         possible_moves = self.get_moves_from(self.board, move.from_position)
         move_found = False

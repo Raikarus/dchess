@@ -21,3 +21,4 @@ class PieceType(Enum):
     MAGE = 10
     PALADIN = 11
     DWARF = 12
+    BASILISK = 13

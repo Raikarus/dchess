@@ -25,6 +25,7 @@ class Container(containers.DeclarativeContainer):
         PieceType.MAGE: providers.Singleton(Mage),
         PieceType.PALADIN: providers.Singleton(Paladin),
         PieceType.DWARF: providers.Singleton(Dwarf),
+        PieceType.BASILISK: providers.Singleton(Basilisk),
     })
     game_manager = providers.Singleton(Game, players=["White Player", "Black Player"],
                                        piece_behaviour_map=piece_behaviour_map)
