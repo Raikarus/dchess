@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-
+from itertools import chain
 from dependency_injector.wiring import Provide, inject
 
 from app.core import Container
@@ -15,8 +15,8 @@ class Config:
     COLOR_MOVE_HIGHLIGHT = "green"
     COLOR_PIECE_WHITE = "gold"
     COLOR_PIECE_BLACK = "deep pink"
-    LINE_WIDTH_OUTLINE = 3
-    LINE_WIDTH_HIGHLIGHT = 3
+    LINE_WIDTH_OUTLINE = 5
+    LINE_WIDTH_HIGHLIGHT = 5
 
 
 PIECE_SYMBOLS = {
@@ -161,7 +161,7 @@ class TkChessView(tk.Frame):
                         x1 + CELL_SIZE / 2,
                         y1 + CELL_SIZE / 2,
                         text=symbol,
-                        font=("Segoe UI Emoji", 20),
+                        font=("Segoe UI Emoji", CELL_SIZE // 2),
                         fill_color=piece_color,
                         outline_color="black"  # или другой цвет контура
                     )
@@ -175,26 +175,16 @@ class TkChessView(tk.Frame):
             self.canvas.create_rectangle(x1, y1, x2, y2,
                                          outline=Config.COLOR_SELECTED_OUTLINE,
                                          width=Config.LINE_WIDTH_OUTLINE)
-        # Выделение возможных ходов выбранной фигуры зелёным
-        for move in self.possible_moves:
+        # Выделение возможных ходов выбранной фигуры (и при наведении)
+        for move in chain(self.possible_moves, self.hover_possible_moves):
             if move.to_position.z == self.current_layer:
                 vis_ty = move.to_position.y if self.white_on_top else height - 1 - move.to_position.y
                 x = move.to_position.x * CELL_SIZE
                 y = vis_ty * CELL_SIZE
-                self.canvas.create_rectangle(
-                    x, y, x + CELL_SIZE, y + CELL_SIZE,
-                    outline=Config.COLOR_MOVE_HIGHLIGHT,
-                    width=Config.LINE_WIDTH_HIGHLIGHT
-                )
-        # Выделение возможных ходов при наведении мыши
-        for move in self.hover_possible_moves:
-            if move.to_position.z == self.current_layer:
-                vis_ty = move.to_position.y if self.white_on_top else height - 1 - move.to_position.y
-                x = move.to_position.x * CELL_SIZE
-                y = vis_ty * CELL_SIZE
+                box_offset = 5
                 outline_color = "red" if move.attack_position is not None else "green"
                 self.canvas.create_rectangle(
-                    x, y, x + CELL_SIZE, y + CELL_SIZE,
+                    (x + box_offset), (y + box_offset), x + CELL_SIZE - box_offset, y + CELL_SIZE - box_offset,
                     outline=outline_color,
                     width=Config.LINE_WIDTH_HIGHLIGHT
                 )
