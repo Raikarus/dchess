@@ -7,13 +7,25 @@ from app.core import Container
 
 CELL_SIZE = 40
 
+
+class Config:
+    COLOR_LIGHT_CELL = "#f0d9b5"
+    COLOR_DARK_CELL = "#b58863"
+    COLOR_SELECTED_OUTLINE = "red"
+    COLOR_MOVE_HIGHLIGHT = "green"
+    COLOR_PIECE_WHITE = "blue"
+    COLOR_PIECE_BLACK = "black"
+    LINE_WIDTH_OUTLINE = 3
+    LINE_WIDTH_HIGHLIGHT = 3
+
+
 PIECE_SYMBOLS = {
     'KING_WHITE': '♔',
     'KING_BLACK': '♚',
     'SYLPH_WHITE': 'S',
-    'SYLPH_BLACK': 's',
+    'SYLPH_BLACK': 'S',
     'GRYPHON_WHITE': 'G',
-    'GRYPHON_BLACK': 'g',
+    'GRYPHON_BLACK': 'G',
     'DRAGON_WHITE': 'Dr',
     'DRAGON_BLACK': 'Dr',
     'WARRIOR_WHITE': 'W',
@@ -49,17 +61,18 @@ class TkChessView(tk.Frame):
         self.selected_pos = None
         self.current_layer = 0
         self.possible_moves = []
+        self.white_on_top = True  # белые сверху по умолчанию
 
         self.canvas = tk.Canvas(self, width=self.game.board.geometry.width * CELL_SIZE,
                                 height=self.game.board.geometry.height * CELL_SIZE)
         self.canvas.pack(side=tk.LEFT)
 
-        # Панель для истории ходов
+        # Панель истории ходов
         self.move_history_box = tk.Listbox(self, width=30)
         self.move_history_box.pack(side=tk.RIGHT, fill=tk.Y)
         tk.Label(self, text="Move History").pack(side=tk.RIGHT)
 
-        # Кнопки для переключения слоя
+        # Кнопки управления слоями и поворотом
         btn_frame = tk.Frame(self)
         btn_frame.pack(side=tk.RIGHT, fill=tk.Y)
         tk.Label(btn_frame, text="Layer / Depth").pack()
@@ -67,10 +80,15 @@ class TkChessView(tk.Frame):
         self.layer_label.pack()
         tk.Button(btn_frame, text="Up", command=self.layer_up).pack()
         tk.Button(btn_frame, text="Down", command=self.layer_down).pack()
+        tk.Button(btn_frame, text="Rotate Board", command=self.rotate_board).pack(pady=20)
 
         self.canvas.bind("<Button-1>", self.on_click)
         self.draw_board()
         self.update_move_history()
+
+    def rotate_board(self):
+        self.white_on_top = not self.white_on_top
+        self.draw_board()
 
     def layer_up(self):
         if self.current_layer < self.game.board.geometry.depth - 1:
@@ -89,46 +107,66 @@ class TkChessView(tk.Frame):
         width = self.game.board.geometry.width
         height = self.game.board.geometry.height
 
-        for y in range(height):
+        # Определяем порядок рисования по вертикали в зависимости от ориентации
+        y_range = range(height) if self.white_on_top else range(height - 1, -1, -1)
+
+        for vis_y, board_y in enumerate(y_range):
             for x in range(width):
-                x1, y1 = x * CELL_SIZE, y * CELL_SIZE
+                x1, y1 = x * CELL_SIZE, vis_y * CELL_SIZE
                 x2, y2 = x1 + CELL_SIZE, y1 + CELL_SIZE
-                fill = "white" if (x + y) % 2 == 0 else "gray"
+                fill = Config.COLOR_LIGHT_CELL if (x + board_y) % 2 == 0 else Config.COLOR_DARK_CELL
                 self.canvas.create_rectangle(x1, y1, x2, y2, fill=fill)
 
-                pos = Position(x, y, self.current_layer)
+                pos = Position(x, board_y, self.current_layer)
                 piece_info = self.game.board.get_piece_at(pos)
                 if piece_info:
                     piece_type, color = piece_info
                     key = f"{piece_type.name}_{color.name}"
                     symbol = PIECE_SYMBOLS.get(key, "?")
+                    piece_color = Config.COLOR_PIECE_BLACK if color == Color.BLACK else Config.COLOR_PIECE_WHITE
                     self.canvas.create_text(
                         x1 + CELL_SIZE / 2,
                         y1 + CELL_SIZE / 2,
                         text=symbol,
                         font=("Arial", 20),
-                        fill="black" if color == Color.BLACK else "blue"
+                        fill=piece_color
                     )
+
+        # Выделение выбранной фигуры
         if self.selected_pos and self.selected_pos.z == self.current_layer:
-            x1 = self.selected_pos.x * CELL_SIZE
-            y1 = self.selected_pos.y * CELL_SIZE
+            sel_x = self.selected_pos.x
+            sel_y = self.selected_pos.y
+            # Корректируем Y для визуального отображения
+            vis_sel_y = sel_y if self.white_on_top else height - 1 - sel_y
+            x1 = sel_x * CELL_SIZE
+            y1 = vis_sel_y * CELL_SIZE
             x2 = x1 + CELL_SIZE
             y2 = y1 + CELL_SIZE
-            self.canvas.create_rectangle(x1, y1, x2, y2, outline="red", width=3)
+            self.canvas.create_rectangle(x1, y1, x2, y2,
+                                         outline=Config.COLOR_SELECTED_OUTLINE,
+                                         width=Config.LINE_WIDTH_OUTLINE)
 
+        # Выделение возможных ходов
         for move in self.possible_moves:
             if move.to_position.z == self.current_layer:
-                x = move.to_position.x * CELL_SIZE
-                y = move.to_position.y * CELL_SIZE
+                tx = move.to_position.x
+                ty = move.to_position.y
+                vis_ty = ty if self.white_on_top else height - 1 - ty
+                x = tx * CELL_SIZE
+                y = vis_ty * CELL_SIZE
                 self.canvas.create_rectangle(
                     x, y, x + CELL_SIZE, y + CELL_SIZE,
-                    outline="green", width=3
+                    outline=Config.COLOR_MOVE_HIGHLIGHT,
+                    width=Config.LINE_WIDTH_HIGHLIGHT
                 )
 
     def on_click(self, event):
         x = event.x // CELL_SIZE
         y = event.y // CELL_SIZE
-        pos = Position(x, y, self.current_layer)
+        height = self.game.board.geometry.height
+        # Преобразуем координаты клика в координаты доски с учётом ориентации
+        board_y = y if self.white_on_top else height - 1 - y
+        pos = Position(x, board_y, self.current_layer)
 
         if self.selected_pos is None:
             piece = self.game.board.get_piece_at(pos)
@@ -171,6 +209,7 @@ if __name__ == "__main__":
     root.title("DragonChess")
 
     view = TkChessView(root)
+    view.rotate_board()
     view.pack()
 
     root.mainloop()
