@@ -7,7 +7,10 @@ from app.domain.piece_behaviours import *
 class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
         packages=[
-            "app.presentation.api"
+            "app.presentation.api",
+        ],
+        modules=[
+            "app.interface.visual"
         ]
     )
     config = providers.Configuration()
