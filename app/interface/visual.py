@@ -13,8 +13,8 @@ class Config:
     COLOR_DARK_CELL = "#b58863"
     COLOR_SELECTED_OUTLINE = "red"
     COLOR_MOVE_HIGHLIGHT = "green"
-    COLOR_PIECE_WHITE = "blue"
-    COLOR_PIECE_BLACK = "black"
+    COLOR_PIECE_WHITE = "gold"
+    COLOR_PIECE_BLACK = "deep pink"
     LINE_WIDTH_OUTLINE = 3
     LINE_WIDTH_HIGHLIGHT = 3
 
@@ -22,34 +22,34 @@ class Config:
 PIECE_SYMBOLS = {
     'KING_WHITE': '♔',
     'KING_BLACK': '♚',
-    'SYLPH_WHITE': 'S',
-    'SYLPH_BLACK': 'S',
-    'GRYPHON_WHITE': 'G',
-    'GRYPHON_BLACK': 'G',
-    'DRAGON_WHITE': 'Dr',
-    'DRAGON_BLACK': 'Dr',
-    'WARRIOR_WHITE': 'W',
-    'WARRIOR_BLACK': "W",
-    'HERO_WHITE': 'H',
-    'HERO_BLACK': 'H',
-    'OLIPHANT_WHITE': 'O',
-    'OLIPHANT_BLACK': 'O',
-    'UNICORN_WHITE': 'U',
-    'UNICORN_BLACK': 'U',
-    'THIEF_WHITE': 'T',
-    'THIEF_BLACK': 'T',
-    'CLERIC_WHITE': 'C',
-    'CLERIC_BLACK': 'C',
-    'MAGE_WHITE': 'M',
-    'MAGE_BLACK': 'M',
-    'PALADIN_WHITE': 'P',
-    'PALADIN_BLACK': 'P',
-    'DWARF_WHITE': 'D',
-    'DWARF_BLACK': 'D',
-    'BASILISK_WHITE': 'B',
-    'BASILISK_BLACK': 'B',
-    'ELEMENTAL_WHITE': 'E',
-    'ELEMENTAL_BLACK': 'E',
+    'SYLPH_WHITE': '🌬️',
+    'SYLPH_BLACK': '🌬️',
+    'GRYPHON_WHITE': '🦅',
+    'GRYPHON_BLACK': '🦅',
+    'DRAGON_WHITE': '🐲',
+    'DRAGON_BLACK': '🐲',
+    'WARRIOR_WHITE': '🛡️',
+    'WARRIOR_BLACK': '🛡️',
+    'HERO_WHITE': '🗡️',
+    'HERO_BLACK': '🗡️',
+    'OLIPHANT_WHITE': '🐘',
+    'OLIPHANT_BLACK': '🐘',
+    'UNICORN_WHITE': '🦄',
+    'UNICORN_BLACK': '🦄',
+    'THIEF_WHITE': '🔪',
+    'THIEF_BLACK': '🔪',
+    'CLERIC_WHITE': '🙏',
+    'CLERIC_BLACK': '🙏',
+    'MAGE_WHITE': '🔮',
+    'MAGE_BLACK': '🔮',
+    'PALADIN_WHITE': '⚔️',
+    'PALADIN_BLACK': '⚔️',
+    'DWARF_WHITE': '⛏️',
+    'DWARF_BLACK': '⛏️',
+    'BASILISK_WHITE': '🐍',
+    'BASILISK_BLACK': '🐍',
+    'ELEMENTAL_WHITE': '🌪️',
+    'ELEMENTAL_BLACK': '🌪️',
 }
 
 
@@ -128,6 +128,15 @@ class TkChessView(tk.Frame):
             self.draw_board()
 
     def draw_board(self):
+        def create_text_with_outline(canvas, x, y, text, font, fill_color, outline_color):
+            # Нарисовать текст сдвинутый в 4 направления для имитации контура
+            offset = 1
+            for dx, dy in [(-offset, 0), (offset, 0), (0, -offset), (0, offset),
+                           (-offset, -offset), (-offset, offset), (offset, -offset), (offset, offset)]:
+                canvas.create_text(x + dx, y + dy, text=text, font=font, fill=outline_color)
+            # Нарисовать основной текст поверх
+            canvas.create_text(x, y, text=text, font=font, fill=fill_color)
+
         self.canvas.delete("all")
         width = self.game.board.geometry.width
         height = self.game.board.geometry.height
@@ -147,12 +156,14 @@ class TkChessView(tk.Frame):
                     key = f"{piece_type.name}_{color.name}"
                     symbol = PIECE_SYMBOLS.get(key, "?")
                     piece_color = Config.COLOR_PIECE_BLACK if color == Color.BLACK else Config.COLOR_PIECE_WHITE
-                    self.canvas.create_text(
+                    create_text_with_outline(
+                        self.canvas,
                         x1 + CELL_SIZE / 2,
                         y1 + CELL_SIZE / 2,
                         text=symbol,
-                        font=("Arial", 20),
-                        fill=piece_color
+                        font=("Segoe UI Emoji", 20),
+                        fill_color=piece_color,
+                        outline_color="black"  # или другой цвет контура
                     )
         # Выделение выбранной фигуры
         if self.selected_pos and self.selected_pos.z == self.current_layer:
