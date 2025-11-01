@@ -82,9 +82,34 @@ class TkChessView(tk.Frame):
         tk.Button(btn_frame, text="Down", command=self.layer_down).pack()
         tk.Button(btn_frame, text="Rotate Board", command=self.rotate_board).pack(pady=20)
 
+        self.hovered_pos = None
+        self.hover_possible_moves = []
         self.canvas.bind("<Button-1>", self.on_click)
+        self.canvas.bind("<Motion>", self.on_mouse_move)
+        self.canvas.bind("<Leave>", self.on_mouse_leave)
         self.draw_board()
         self.update_move_history()
+
+    def on_mouse_move(self, event):
+        x = event.x // CELL_SIZE
+        y = event.y // CELL_SIZE
+        height = self.game.board.geometry.height
+        board_y = y if self.white_on_top else height - 1 - y
+        pos = Position(x, board_y, self.current_layer)
+
+        if pos != self.hovered_pos:
+            self.hovered_pos = pos
+            piece = self.game.board.get_piece_at(pos)
+            if piece and piece[1] == self.game.current_turn:
+                self.hover_possible_moves = self.game.get_moves_from(self.game.board, pos)
+            else:
+                self.hover_possible_moves = []
+            self.draw_board()
+
+    def on_mouse_leave(self, event):
+        self.hovered_pos = None
+        self.hover_possible_moves = []
+        self.draw_board()
 
     def rotate_board(self):
         self.white_on_top = not self.white_on_top
@@ -107,9 +132,7 @@ class TkChessView(tk.Frame):
         width = self.game.board.geometry.width
         height = self.game.board.geometry.height
 
-        # Определяем порядок рисования по вертикали в зависимости от ориентации
         y_range = range(height) if self.white_on_top else range(height - 1, -1, -1)
-
         for vis_y, board_y in enumerate(y_range):
             for x in range(width):
                 x1, y1 = x * CELL_SIZE, vis_y * CELL_SIZE
@@ -131,32 +154,37 @@ class TkChessView(tk.Frame):
                         font=("Arial", 20),
                         fill=piece_color
                     )
-
         # Выделение выбранной фигуры
         if self.selected_pos and self.selected_pos.z == self.current_layer:
-            sel_x = self.selected_pos.x
-            sel_y = self.selected_pos.y
-            # Корректируем Y для визуального отображения
-            vis_sel_y = sel_y if self.white_on_top else height - 1 - sel_y
-            x1 = sel_x * CELL_SIZE
+            vis_sel_y = self.selected_pos.y if self.white_on_top else height - 1 - self.selected_pos.y
+            x1 = self.selected_pos.x * CELL_SIZE
             y1 = vis_sel_y * CELL_SIZE
             x2 = x1 + CELL_SIZE
             y2 = y1 + CELL_SIZE
             self.canvas.create_rectangle(x1, y1, x2, y2,
                                          outline=Config.COLOR_SELECTED_OUTLINE,
                                          width=Config.LINE_WIDTH_OUTLINE)
-
-        # Выделение возможных ходов
+        # Выделение возможных ходов выбранной фигуры зелёным
         for move in self.possible_moves:
             if move.to_position.z == self.current_layer:
-                tx = move.to_position.x
-                ty = move.to_position.y
-                vis_ty = ty if self.white_on_top else height - 1 - ty
-                x = tx * CELL_SIZE
+                vis_ty = move.to_position.y if self.white_on_top else height - 1 - move.to_position.y
+                x = move.to_position.x * CELL_SIZE
                 y = vis_ty * CELL_SIZE
                 self.canvas.create_rectangle(
                     x, y, x + CELL_SIZE, y + CELL_SIZE,
                     outline=Config.COLOR_MOVE_HIGHLIGHT,
+                    width=Config.LINE_WIDTH_HIGHLIGHT
+                )
+        # Выделение возможных ходов при наведении мыши
+        for move in self.hover_possible_moves:
+            if move.to_position.z == self.current_layer:
+                vis_ty = move.to_position.y if self.white_on_top else height - 1 - move.to_position.y
+                x = move.to_position.x * CELL_SIZE
+                y = vis_ty * CELL_SIZE
+                outline_color = "red" if move.attack_position is not None else "green"
+                self.canvas.create_rectangle(
+                    x, y, x + CELL_SIZE, y + CELL_SIZE,
+                    outline=outline_color,
                     width=Config.LINE_WIDTH_HIGHLIGHT
                 )
 
