@@ -5,14 +5,13 @@ from app.core import Container
 from app.domain.aggregates.game import Game
 from app.domain.value_objects.move import Move
 from ..schemas import (
-    MoveResponse,
     MoveRequest,
 )
 
 router = APIRouter(prefix="/api/game", tags=["game"])
 
 
-@router.post("/make_move", response_model=MoveResponse, status_code=status.HTTP_200_OK)
+@router.post("/make_move", status_code=status.HTTP_200_OK)
 @inject
 async def make_move(move: MoveRequest, game_manager: Game = Depends(Provide[Container.game_manager])):
     from_pos = Position(move.from_position.x, move.from_position.y, move.from_position.z)
@@ -37,7 +36,7 @@ async def get_state(game_manager: Game = Depends(Provide[Container.game_manager]
     }
 
 
-@router.post("/game/new", status_code=status.HTTP_200_OK)
+@router.post("/new", status_code=status.HTTP_200_OK)
 @inject
 async def reset_game(game_manager: Game = Depends(Provide[Container.game_manager])):
     try:
@@ -47,7 +46,7 @@ async def reset_game(game_manager: Game = Depends(Provide[Container.game_manager
     return {"message": "Game reset successfully"}
 
 
-@router.get("/game/moves", status_code=status.HTTP_200_OK)
+@router.get("/moves", status_code=status.HTTP_200_OK)
 @inject
 async def get_available_moves(game_manager: Game = Depends(Provide[Container.game_manager])):
     moves = game_manager.get_all_possible_moves()
@@ -65,7 +64,7 @@ async def get_available_moves(game_manager: Game = Depends(Provide[Container.gam
     return result
 
 
-@router.post("/game/undo", status_code=status.HTTP_200_OK)
+@router.post("/undo", status_code=status.HTTP_200_OK)
 @inject
 async def undo_move(game_manager: Game = Depends(Provide[Container.game_manager])):
     try:

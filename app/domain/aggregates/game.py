@@ -247,5 +247,11 @@ class Game:
         for position, (ptype, pcolor) in self.board.pieces.items():
             if pcolor == self.current_turn:
                 moves = self.get_moves_from(self.board, position)
-                possible_moves.extend(moves)
+                res_moves = []
+                for move in moves:
+                    board_copy = deepcopy(self.board)
+                    board_copy.move_piece(move)
+                    if not self.is_in_check(board_copy, pcolor):
+                        res_moves += [move]
+                possible_moves.extend(res_moves)
         return possible_moves

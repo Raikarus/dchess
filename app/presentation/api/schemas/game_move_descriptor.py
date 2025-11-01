@@ -12,10 +12,6 @@ class MoveRequest(BaseModel):
     to_position: Position
 
 
-class MoveResponse(BaseModel):
-    success: bool
-    message: str
-
 
 class Move(BaseModel):
     from_position: Position
