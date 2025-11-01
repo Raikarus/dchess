@@ -1,17 +1,23 @@
 from pydantic import BaseModel
 
 
-# Модель для запроса хода
+class Position(BaseModel):
+    x: int
+    y: int
+    z: int
+
+
 class MoveRequest(BaseModel):
-    from_x: int
-    from_y: int
-    from_z: int
-    to_x: int
-    to_y: int
-    to_z: int
+    from_position: Position
+    to_position: Position
 
 
-# Модель ответа с результатом
 class MoveResponse(BaseModel):
     success: bool
     message: str
+
+
+class Move(BaseModel):
+    from_position: Position
+    to_position: Position
+    attack_position: Position | None = None

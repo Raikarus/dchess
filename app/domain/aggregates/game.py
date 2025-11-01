@@ -234,3 +234,18 @@ class Game:
         if is_promote:
             promoted_piece_type = strategy_provider.get_promote_type()
             self.board.place_piece(promoted_piece_type, piece_color, position)
+
+    def reset(self):
+        self.board = self._initialize_board()
+        self.move_history = []
+        self.current_turn = Color.WHITE
+        self.state = GameState.ONGOING
+        self.current_player = self.players[0]
+
+    def get_all_possible_moves(self) -> List[Move]:
+        possible_moves = []
+        for position, (ptype, pcolor) in self.board.pieces.items():
+            if pcolor == self.current_turn:
+                moves = self.get_moves_from(self.board, position)
+                possible_moves.extend(moves)
+        return possible_moves
