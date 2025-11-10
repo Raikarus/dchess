@@ -24,7 +24,24 @@ async def make_move(move: MoveRequest, game_manager: Game = Depends(Provide[Cont
         raise HTTPException(status_code=400, detail=f"Invalid move: {err}")
     return {"success": True, "message": "Move made successfully"}
 
-
+def serialize_position(pos):
+    return {'x': pos.x, 'y': pos.y, 'z': pos.z}
+def serialize_board(board):
+    pieces_serialized = {}
+    for pos, (ptype, color) in board.pieces.items():
+        # Координаты позиции как строка ключ
+        key = f"{pos.x}_{pos.y}_{pos.z}"
+        pieces_serialized[key] = {
+            "piece_type": ptype.name,
+            "color": color.name,
+            "position": serialize_position(pos)
+        }
+    return {
+        "width": board.geometry.width,
+        "height": board.geometry.height,
+        "depth": board.geometry.depth,
+        "pieces": pieces_serialized
+    }
 @router.get("/state", status_code=status.HTTP_200_OK)
 @inject
 async def get_state(game_manager: Game = Depends(Provide[Container.game_manager])):
@@ -32,6 +49,7 @@ async def get_state(game_manager: Game = Depends(Provide[Container.game_manager]
         "current_turn": game_manager.current_turn.name,
         "game_state": game_manager.state.name,
         "board": str(game_manager.board),
+        "board_obj": serialize_board(game_manager.board),
         "move_history": [str(m) for m in game_manager.move_history]
     }
 
