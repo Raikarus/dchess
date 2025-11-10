@@ -1,6 +1,6 @@
 # DragonChess
 
-<img src="https://masterpiecer-images.s3.yandex.net/65212c08a59e11eea160fedcde01c776:upscaled" width="300" height="300" alt="DragonChess Logo">
+<img src="https://masterpiecer-images.s3.yandex.net/65212c08a59e11eea160fedcde01c776:upscaled" width="300" alt="DragonChess Logo">
 
 ## О проекте
 
@@ -28,7 +28,7 @@ cd dchess
 python -m venv .venv
 source .venv/bin/activate # Linux/macOS
 ..venv\Scripts\activate # Windows
-pip install -r requirements.txt # можете не устанавливать FastAPI и Uvicorn если API не нужно
+pip install -r requirements.txt
 ```
 
 ---
