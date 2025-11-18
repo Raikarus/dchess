@@ -55,7 +55,7 @@ PIECE_SYMBOLS = {
 
 class TkChessView(tk.Frame):
     @inject
-    def __init__(self, master, game: "Game" = Provide[Container.game_factory]):
+    def __init__(self, master, game: "Game" = Provide[Container.game_manager]):
         super().__init__(master)
         self.game = game
         self.selected_pos = None
