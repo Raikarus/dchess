@@ -1,6 +1,4 @@
 from .game_move_descriptor import (
-    MoveRequest,
-    MoveResponse
-)
+    MoveRequest,)
 
-__all__ = ["MoveRequest", "MoveResponse"]
+__all__ = ["MoveRequest"]

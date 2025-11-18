@@ -1,7 +1,9 @@
 from dependency_injector import containers, providers
+
 from app.domain.aggregates import Game
-from app.domain.value_objects import PieceType
 from app.domain.piece_behaviours import *
+from app.domain.value_objects import PieceType
+from app.infrastructure import GameRepository
 
 
 class Container(containers.DeclarativeContainer):
@@ -31,5 +33,7 @@ class Container(containers.DeclarativeContainer):
         PieceType.BASILISK: providers.Singleton(Basilisk),
         PieceType.ELEMENTAL: providers.Singleton(Elemental)
     })
-    game_manager = providers.Singleton(Game, players=["White Player", "Black Player"],
-                                       piece_behaviour_map=piece_behaviour_map)
+    game_factory = providers.Factory(Game, players=["White Player", "Black Player"],
+                                     piece_behaviour_map=piece_behaviour_map)
+
+    game_repository = providers.Singleton(GameRepository)

@@ -4,6 +4,7 @@ from app.domain.color import Color
 from app.domain.board import Board
 from app.domain.value_objects import BoardGeometry, PieceType, Position, Move
 from copy import deepcopy
+import uuid
 
 
 class GameState(Enum):
@@ -16,6 +17,7 @@ class GameState(Enum):
 
 class Game:
     def __init__(self, players: List[str], piece_behaviour_map: dict):
+        self.uuid = uuid.uuid4()
         self.players = players
         self.current_turn: Color = Color.WHITE
         self.state: GameState = GameState.ONGOING
@@ -234,3 +236,25 @@ class Game:
         if is_promote:
             promoted_piece_type = strategy_provider.get_promote_type()
             self.board.place_piece(promoted_piece_type, piece_color, position)
+
+    def reset(self):
+        self.uuid = uuid.uuid4()
+        self.board = self._initialize_board()
+        self.move_history = []
+        self.current_turn = Color.WHITE
+        self.state = GameState.ONGOING
+        self.current_player = self.players[0]
+
+    def get_all_possible_moves(self) -> List[Move]:
+        possible_moves = []
+        for position, (ptype, pcolor) in self.board.pieces.items():
+            if pcolor == self.current_turn:
+                moves = self.get_moves_from(self.board, position)
+                res_moves = []
+                for move in moves:
+                    board_copy = deepcopy(self.board)
+                    board_copy.move_piece(move)
+                    if not self.is_in_check(board_copy, pcolor):
+                        res_moves += [move]
+                possible_moves.extend(res_moves)
+        return possible_moves
