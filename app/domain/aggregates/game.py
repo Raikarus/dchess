@@ -4,6 +4,7 @@ from app.domain.color import Color
 from app.domain.board import Board
 from app.domain.value_objects import BoardGeometry, PieceType, Position, Move
 from copy import deepcopy
+import uuid
 
 
 class GameState(Enum):
@@ -16,6 +17,7 @@ class GameState(Enum):
 
 class Game:
     def __init__(self, players: List[str], piece_behaviour_map: dict):
+        self.uuid = uuid.uuid4()
         self.players = players
         self.current_turn: Color = Color.WHITE
         self.state: GameState = GameState.ONGOING
@@ -236,6 +238,7 @@ class Game:
             self.board.place_piece(promoted_piece_type, piece_color, position)
 
     def reset(self):
+        self.uuid = uuid.uuid4()
         self.board = self._initialize_board()
         self.move_history = []
         self.current_turn = Color.WHITE
